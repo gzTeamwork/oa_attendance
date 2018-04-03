@@ -13,7 +13,8 @@ Vue.use(MuseUI);
 import "vue-event-calendar/dist/style.css";
 import vueEventCalendar from "vue-event-calendar";
 Vue.use(vueEventCalendar, {
-  locale: "zh"
+  locale: "zh",
+  color: "#007acc"
 });
 
 import App from "./App";
@@ -33,3 +34,6 @@ new Vue({
   components: { App },
   template: "<App/>"
 });
+
+//  引入其他库
+import "@/libs/dateTimeStamp.js";
