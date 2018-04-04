@@ -17,6 +17,10 @@ Vue.use(vueEventCalendar, {
   color: "#007acc"
 });
 
+//  引入axios
+import vueAxios from "axios";
+Vue.prototype.$http = vueAxios;
+
 import App from "./App";
 import router from "./router";
 

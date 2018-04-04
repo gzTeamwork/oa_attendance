@@ -1,7 +1,7 @@
 <template>
   <div id='fullCalendar'>
     <vuefullCalendar :events="fcEvents" locale="en">
-      </vuefullCalendar>
+    </vuefullCalendar>
   </div>
 </template>
 
@@ -39,5 +39,4 @@
   .comp-full-calendar {
     padding: 20px 0;
   }
-
 </style>

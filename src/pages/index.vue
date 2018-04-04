@@ -2,21 +2,34 @@
   <div id='index'>
 
     <mu-tabs :value="activeTab" @change="handleTabChange">
-      <mu-tab value="tab1" title="排版" />
-      <mu-tab value="tab2" title="考勤" />
+      <mu-tab value="tabEventCalendar" title="排版" />
+      <!-- <mu-tab value="tabFullCalendar" title="排版" /> -->
+      <mu-tab value="tabOnDuty" title="考勤" />
     </mu-tabs>
-    <transition name="fade" mode="">
-      <div v-if="activeTab === 'tab1'">
+    <transition-group name="tabs" enter-active-class="animated bounceInDown" leave-active-class="animated bounceOut">
+      <div v-show="activeTab === 'tabEventCalendar'" :key="1">
+        <keep-alive>
+          <comEventCalendar></comEventCalendar>
+        </keep-alive>
+      </div>
+      <!-- <div v-if="activeTab === 'tabFullCalendar'">
         <comFullCalendar></comFullCalendar>
+      </div> -->
+      <div v-show="activeTab === 'tabOnDuty'" :key="2">
+        <keep-alive>
+          <comDuty></comDuty>
+        </keep-alive>
       </div>
-      <div v-if="activeTab === 'tab2'">
-        <comDuty></comDuty>
-      </div>
-    </transition>
+    </transition-group>
   </div>
 </template>
 
 <script>
+  import eventBus from '@/libs/eventBus.js';
+  import serverApi from '@/libs/serverApi.js';
+  //  加载事件日历
+  let comEventCalendar = () =>
+    import ("./components/eventCalendar.vue");
   //  加载日历组件
   let comFullCalendar = () =>
     import ("./components/fullCalendar.vue");
@@ -27,40 +40,34 @@
     name: 'index',
     data() {
       return {
-        calenderEvents: calenderEvents,
-        activeTab: "tab1"
+        activeTab: "tabEventCalendar"
       }
     },
     components: {
       comDuty,
-      comFullCalendar
+      comFullCalendar,
+      comEventCalendar,
+    },
+    beforeCreate(){
+      let vm = this;
+      //  测试连接后台
+      vm.$http.get(serverApi.serverUrl + "api/get_token", {
+        params: {
+          appToken: "oa_attendance"
+        }
+      }).then(function (response) {
+        console.log(response);
+        if (response.status === 200) {
+          let resData = response.data;
+          vm.appToken = resData
+          eventBus.$emit('appToken', resData);
+        }
+      })
     },
     mounted() {
-      // 今天
-      let vueDate = new Date();
-      let today = vueDate.getFullYear() + '/' + (vueDate.getMonth() + 1) + '/' + vueDate.getDate();
-      console.log(today)
-      this.$EventCalendar.toDate(today);
-      vueDate.setDate(0);
-      let toMouth = vueDate.getDate();
-      for (let i = 1; i < toMouth; i++) {
-        vueDate.setDate(i)
-        let eventArray = {
-          date: vueDate.getFullYear() + '/' + (vueDate.getMonth() + 2) + '/' + vueDate.getDate(),
-          title: "排班",
-        }
-        calenderEvents.push(eventArray);
-      }
+      
     },
     methods: {
-      //  日期切换事件
-      handleDayChanged: (dateEvent) => {
-        console.log(dateEvent);
-      },
-      //  月份切换事件
-      handleMonthChanged: (dateEvent) => {
-        console.log(dateEvent)
-      },
       //  tab页切换时间
       handleTabChange: function (val) {
         let vm = this;
@@ -71,18 +78,8 @@
       handleActive: (e) => {
 
       },
-      getToday: function () {
-        let vueDate = new Date();
-        return vueDate.getFullYear() + '/' + (vueDate.getMonth() + 1) + '/' + vueDate.getDate();
-      },
     }
   }
-
-  let calenderEvents = [{
-    date: '2018/4/2',
-    title: '排班',
-    onduty: ['郭梓豪', '钟春苑', '杨柳']
-  }]
 
 </script>
 
