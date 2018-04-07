@@ -14,17 +14,13 @@
     "build": "node build/build.js"
   },
   "dependencies": {
-    "animate.css": "^3.6.1",
-    "axios": "^0.18.0",
     "babel-plugin-syntax-dynamic-import": "^6.18.0",
     "es2015": "0.0.0",
     "mint-ui": "^2.2.13",
     "muse-ui": "^2.1.0",
-    "nprogress": "^0.2.0",
     "vue": "^2.5.2",
     "vue-circle-menu": "^1.1.1",
     "vue-event-calendar": "^1.5.2",
-    "vue-fullcalendar": "^1.0.9",
     "vue-router": "^3.0.1"
   },
   "devDependencies": {
