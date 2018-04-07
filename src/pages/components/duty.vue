@@ -2,7 +2,7 @@
  * @Author: Zicokuo 
  * @Date: 2018-04-06 10:51:22 
  * @Last Modified by: Zicokuo
- * @Last Modified time: 2018-04-06 13:06:40
+ * @Last Modified time: 2018-04-07 22:25:43
  */
 <template>
   <div id='pageDuty'>
@@ -109,13 +109,6 @@ export default {
         console.log(v);
       }
     );
-
-    //  链接企业微信
-    let token = weixinApi.getAccessToken(
-      weixinApi.configs.corpId,
-      weixinApi.configs.corpSecret
-    );
-    console.log(token);
   },
   beforeMount: function() {
     let vm = this;
@@ -172,8 +165,14 @@ export default {
     },
     //  获取用户信息
     handleGetUserInfo: function() {
-      let userInfo = weixinApi.getUserAuth(weixinApi.corpId, "");
+      console.log(weixinApi.configs.corpId);
+      let redirect_uri = "http://wxoa.emking.cn";
+      let userInfo = weixinApi.getUserAuth(
+        weixinApi.configs.corpId,
+        redirect_uri
+      );
       console.log(userInfo);
+      window.location.href = userInfo;
     }
   }
 };

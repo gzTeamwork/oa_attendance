@@ -9,6 +9,9 @@ import 'muse-ui/dist/theme-carbon.css'
 import '../static/iconfont/material-icons.css'
 Vue.use(MuseUI)
 
+//  引入jQuery
+import jQuery from 'jquery'
+
 //  引入axios
 import vueAxios from 'axios'
 Vue.prototype.$http = vueAxios

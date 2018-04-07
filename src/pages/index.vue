@@ -2,7 +2,7 @@
  * @Author: Zicokuo 
  * @Date: 2018-04-06 10:51:38 
  * @Last Modified by: Zicokuo
- * @Last Modified time: 2018-04-06 10:54:12
+ * @Last Modified time: 2018-04-07 22:34:21
  */
 <template>
   <div id='index'>
@@ -40,6 +40,8 @@
 import museToast from "@/components/museToast.vue";
 import eventBus from "@/libs/eventBus.js";
 import serverApi from "@/libs/serverApi.js";
+import weixinApi from "@/libs/weixinApi.js";
+
 //  加载事件日历
 let comEventCalendar = () => import("./components/eventCalendar.vue");
 //  加载日历组件
@@ -65,26 +67,16 @@ export default {
   beforeCreate() {
     let vm = this;
     //  测试连接后台
-    vm.$http
-      .get(serverApi.serverUrl + "api/get_token", {
-        params: {
-          appToken: "oa_attendance"
-        }
-      })
-      .then(function(response) {
-        console.log(response);
-        if (response.status === 200) {
-          vm.toast.msg = "已连接..";
-          let resData = response.data;
-          vm.appToken = resData;
-          eventBus.$emit("appToken", resData);
-        } else {
-          vm.toast.msg = "无法连接";
-        }
-      })
-      .catch(function(error) {
-        vm.toast.msg = "无法连接";
-      });
+    let accessToken = serverApi.getToken();
+
+    let redirect_uri = "http://wxoa.emking.cn";
+    let userCode = weixinApi.getUserAuth(
+      weixinApi.configs.corpId,
+      redirect_uri
+    );
+
+    let userInfo = weixinApi.getUserInfo(userCode, accessToken);
+    console.log(userInfo);
   },
 
   methods: {
