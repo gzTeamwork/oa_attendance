@@ -1,35 +1,43 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
-import Vue from "vue";
+import Vue from 'vue'
 
 // 引入 muse-ui
-import MuseUI from "muse-ui";
-import "muse-ui/dist/muse-ui.css";
-import "muse-ui/dist/theme-carbon.css";
-import "../static/iconfont/material-icons.css";
-Vue.use(MuseUI);
+import MuseUI from 'muse-ui'
+import 'muse-ui/dist/muse-ui.css'
+import 'muse-ui/dist/theme-carbon.css'
+import '../static/iconfont/material-icons.css'
+Vue.use(MuseUI)
 
-// 引入日历插件
-import "vue-event-calendar/dist/style.css";
-import vueEventCalendar from "vue-event-calendar";
-Vue.use(vueEventCalendar, {
-  locale: "zh"
-});
+//  引入axios
+import vueAxios from 'axios'
+Vue.prototype.$http = vueAxios
 
-import App from "./App";
-import router from "./router";
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
 
-// //  引入mint-ui
-// import Mint from "mint-ui";
-// import "mint-ui/lib/style.css";
-// Vue.use(Mint);
+import App from './App'
+import router from './router'
 
-Vue.config.productionTip = false;
+Vue.config.productionTip = false
 
 /* eslint-disable no-new */
 new Vue({
-  el: "#app",
+  el: '#app',
   router,
   components: { App },
-  template: "<App/>"
-});
+  template: '<App/>'
+})
+
+NProgress.start()
+
+router.beforeEach((to, from, next) => {
+  next()
+})
+router.afterEach(transition => {
+  NProgress.done()
+})
+
+//  引入其他库
+import '@/libs/dateTimeStamp.js'
+import 'animate.css'
