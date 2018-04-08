@@ -24,14 +24,24 @@ dateCalendar.init = function() {
         "/" +
         dateToday.getDate(),
       title: "排班",
-      onDuty: "zico",
-      onRest: "Yuni"
+      onDuty: [
+        "胡玲飞",
+        "胡琼枝",
+        "钟春苑",
+        "杨柳",
+        "彭小琴",
+        "黄楚欣",
+        "江秀云",
+        "林华清"
+      ],
+      onRest: ["郭梓豪", "何锦文"]
     };
     let dateDay = dateToday.getDay();
     if (dateDay > 0 && dateDay < 6) {
       this.events.push(event);
     }
   }
+ 
 };
 
 const one_event = { date: "", onDuty: "", onRest: "" };

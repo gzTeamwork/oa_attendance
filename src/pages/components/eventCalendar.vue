@@ -1,18 +1,25 @@
 <template>
   <div id='vueEventsCalendar'>
-    <vue-event-calendar :events="calenderEvents"
-                        @day-changed="handleDayChanged"
-                        @month-changed="handleMonthChanged"
-                        :style='{"margin-bottom":"2em"}'>
+    <vue-event-calendar :events="calenderEvents" @day-changed="handleDayChanged" @month-changed="handleMonthChanged" :style='{"margin-bottom":"2em"}'>
       <template slot-scope="props">
-        <div v-for="(event, index) in props.showEvents"
-             class="event-item"
-             :key="index">
+        <div v-for="(event, index) in props.showEvents" class="event-item" :key="index">
           <!-- 这里拿到的是传入的单个event所有数据 -->
-          <div v-for="(user , oindex) in event.onduty"
-               :key="oindex">
-            {{user}}
-          </div>
+          <mu-flexbox justify="flex-start" :gutter="8">
+            <mu-flexbox-item class="flex-demo">
+              <mu-list>
+                <mu-list-item v-for="(duser , dindex) in event.onDuty" :key="index+'onDuty'+dindex" :title="duser">
+                  <mu-icon color="lightGreen500" slot="right" value="班" />
+                </mu-list-item>
+              </mu-list>
+            </mu-flexbox-item>
+            <mu-flexbox-item class="flex-demo">
+              <mu-list>
+                <mu-list-item v-for="(ruser , rindex) in event.onRest" :key="index+'onDuty'+rindex" :title="ruser">
+                  <mu-icon color="pink500" slot="right" value="休" />
+                </mu-list-item>
+              </mu-list>
+            </mu-flexbox-item>
+          </mu-flexbox>
         </div>
       </template>
     </vue-event-calendar>
@@ -20,61 +27,63 @@
 </template>
 
 <script>
-// 引入日历插件
-import Vue from "vue";
-import "vue-event-calendar/dist/style.css";
-import vueEventCalendar from "vue-event-calendar";
-Vue.use(vueEventCalendar, {
-  locale: "zh",
-  color: "#007acc"
-});
+  // 引入日历插件
+  import Vue from "vue";
+  import "vue-event-calendar/dist/style.css";
+  import vueEventCalendar from "vue-event-calendar";
+  Vue.use(vueEventCalendar, {
+    locale: "zh",
+    color: "#7e57c2"
+  });
 
-import eventBus from "@/libs/eventBus.js";
-import dateCalendar from "@/libs/dateCalendar.js";
-dateCalendar.init();
+  import eventBus from "@/libs/eventBus.js";
+  import dateCalendar from "@/libs/dateCalendar.js";
+  dateCalendar.init();
 
-export default {
-  name: "vueEventsCalendar",
-  data() {
-    return {
-      calenderEvents: dateCalendar.events,
-      appToken: null
-    };
-  },
-  created() {
-    let vm = this;
-    let today = dateCalendar.today;
-    vm.$EventCalendar.toDate(today);
-    eventBus.$on("appToken", function(data) {
-      vm.appToken = data;
-    });
-  },
-  beforeMount() {},
-  methods: {
-    //  日期切换事件
-    handleDayChanged: dateEvent => {
-      console.log(dateEvent);
+  export default {
+    name: "vueEventsCalendar",
+    data() {
+      return {
+        calenderEvents: null,
+        appToken: null
+      };
     },
-    //  月份切换事件
-    handleMonthChanged: dateEvent => {
-      console.log(dateEvent);
+    created() {
+      let vm = this;
+      let today = dateCalendar.today;
+      vm.$EventCalendar.toDate(today);
+      eventBus.$on("appToken", function (data) {
+        vm.appToken = data;
+      });
+      vm.calenderEvents = dateCalendar.events
     },
-    getToday: function() {
-      let vueDate = new Date();
-      return (
-        vueDate.getFullYear() +
-        "/" +
-        (vueDate.getMonth() + 1) +
-        "/" +
-        vueDate.getDate()
-      );
+    methods: {
+      //  日期切换事件
+      handleDayChanged: dateEvent => {
+        console.log(dateEvent);
+      },
+      //  月份切换事件
+      handleMonthChanged: dateEvent => {
+        console.log(dateEvent);
+      },
+      getToday: function () {
+        let vueDate = new Date();
+        return (
+          vueDate.getFullYear() +
+          "/" +
+          (vueDate.getMonth() + 1) +
+          "/" +
+          vueDate.getDate()
+        );
+      }
     }
-  }
-};
+  };
+
 </script>
 
 <style scoped>
-.item .is-event {
-  border-radius: 0 !important;
-}
+  .item .is-event {
+    border-radius: 0 !important;
+  }
+
 </style>
