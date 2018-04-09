@@ -2,9 +2,10 @@
  * @Author: Zicokuo
  * @Date: 2018-04-07 00:45:24
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2018-04-08 12:02:44
+ * @Last Modified time: 2018-04-09 11:38:06
  */
 import axios from "axios";
+import VueCookie from "vue-cookies";
 const configs = {
   corpId: "wwdc02ce3b575253e3",
   corpSecret: "ipWlHNDjalbGoLOqB2mCR4lNz2GqgiSmx03OJms8PDw",
@@ -16,18 +17,31 @@ let getAccessToken = function(corpid, corpsecret) {
   // https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=ID&corpsecret=SECRECT
 
   let url = "https://qyapi.weixin.qq.com/cgi-bin/gettoken";
-  let result = "";
+  let result = VueCookie.get("access_token");
+
+  if (result !== null) {
+    console.log("从缓存中提取access_token");
+    return result;
+  }
 
   axios
-    .get(url, {
+    .post(url, {
       params: {
-        corpid: corpid || weixinApi.configs.corpId,
-        corpsecret: corpsecret || weixinApi.configs.corpSecret
+        corpid: corpid || configs.corpId,
+        corpsecret: corpsecret || configs.corpSecret
       }
     })
     .then(res => {
-      if (res.status === 200) {
+      if (res.status === 200 && res.data.errcode === 0) {
+        console.log("成功获取企业微信应用AccessToken");
+        VueCookie.set(
+          "access_token",
+          res.data.access_token,
+          res.data.expires_in
+        );
         result = res.data;
+      } else {
+        console.log(res.data.errmsg);
       }
     });
 
@@ -41,11 +55,14 @@ let getUserAuth = function(corpid, redirectUri, scope, state) {
   let params = {
     appid: corpid || configs.corpId,
     redirect_uri: redirectUri || window.location.href,
+    response_type: "code",
     scope: scope || "snsapi_privateinfo",
     agentid: configs.agentId,
     state: state || "wxwork_login"
   };
   url = url + "?" + toQuery(params) + "#wechat_redirect";
+  console.log(url);
+
   window.location.href = url;
   // axios.get(url).then(response => {
   //   if (response.status === 200) {
@@ -55,19 +72,25 @@ let getUserAuth = function(corpid, redirectUri, scope, state) {
   return result;
 };
 
-//  获取用户信息 - get user info
-let getUserInfo = function(userCode, accessToken) {
+//  通过code获取用户信息 - get user info
+let getUserInfoByCode = function(userCode, accessToken) {
   //  https://qyapi.weixin.qq.com/cgi-bin/user/getuserinfo?access_token=ACCESS_TOKEN&code=CODE
   let result = null;
-  let url =
-    "https://qyapi.weixin.qq.com/cgi-bin/user/getuserinfo?access_token=ACCESS_TOKEN&code=CODE";
+  let url = "https://qyapi.weixin.qq.com/cgi-bin/user/getuserinfo";
   axios
     .get(url, {
-      params: { access_token: accessToken, code: userCode }
+      params: {
+        access_token: accessToken,
+        code: userCode
+      }
     })
     .then(res => {
-      if (res.status === 200) {
-        result = res.date;
+      if (res.status === 200 && res.data.errcode == 0) {
+        console.info("成功通过code换取userInfo");
+        VueCookie.set("user_ticket", res.data.user_ticket, res.data.expire_in);
+        result = res.data;
+      } else {
+        console.error(res.data.errmsg);
       }
     });
   return result;
@@ -87,6 +110,6 @@ const weixinApi = {
   configs: configs,
   getAccessToken: getAccessToken,
   getUserAuth: getUserAuth,
-  getUserInfo: getUserInfo
+  getUserInfoByCode: getUserInfoByCode
 };
 export default weixinApi;
