@@ -4,7 +4,6 @@
   <div id='pageDuty'>
     <br>
     <muse-toast :msg="toast.msg"></muse-toast>
-
     <div v-if="needLogin" style="height: 640px;display: flex;justify-content: center;align-items: center">
       <mu-flexbox orient="vertical" justify="center" align="center">
         <mu-flexbox-item>
@@ -14,7 +13,7 @@
         <mu-raised-button label="用户登录" @click="handleUserAuth"></mu-raised-button>
       </mu-flexbox>
     </div>
-    <div v-if="needLogin == false">
+    <div v-if="!needLogin">
       <!-- 日期弹框 -->
       <mu-avatar slot="left" :src="userInfo.avatar || defaultAvatar" :size="96" />
       <mu-card-title :title="userInfo.name || '企业微信昵称'" :subTitle="userInfo.english_name ||''">
@@ -43,7 +42,7 @@
     name: "pageDuty",
     data() {
       return {
-        needLogin: false,
+        needLogin: true,
         userInfo: null,
         defaultAvatar: defaultAvatar,
         restDay: 2,
@@ -76,20 +75,24 @@
 
       //  1.用户缓存和捕捉code参数
       let params = vm.$helper.getUrlJson(window.location.href);
-      let userCode = params.code || '6axFFF7_Gz4kSMFrv-UAjJru0ygCeDbk9KFNve6BK3I'
+      let userCode = params.code || null
 
       if (userCode == null) {
         //  没有用户缓存,也没有返回用户code,跳转申请
-        vm.needLogin = true;
+        vm.$weixinApi.getUserAuth();
+        // vm.needLogin = true;
       } else {
         //  有user_code返回码,则丢给服务器更新用户信息
         let userInfo = vm.$serverApi.getUserInfo(userCode);
-
-
       }
+
     },
     created: function () {
       let vm = this;
+      EventBus.$on("needAuth", data => {
+        console.log("捕捉到needAuth" + data);
+        vm.needLogin = data;
+      })
 
       //  接收UserInfo
       EventBus.$on("userInfo", user => {
@@ -97,14 +100,16 @@
         //  缓存userInfo
         vm.$cookies.set("userInfo", user, "1d");
         vm.userInfo = user;
+        vm.needLogin = false;
         // 有了userid,就获取对应的休假日
-        vm.$serverApi.getRestDayByUser(user.userid);
+        vm.$serverApi.getRestDayByUser(user.name);
       });
 
       //  接收当前用户休假日
       EventBus.$on("curUserRestDay", days => {
         console.log("捕捉当前用户休假日数据");
-        vm.workerRestDays = days;
+        vm.workerRestDays = days || [];
+
       })
 
       //  接收AppToken
@@ -138,11 +143,7 @@
       getToday: function () {
         let vueDate = new Date();
         return (
-          vueDate.getFullYear() +
-          "/" +
-          (vueDate.getMonth() + 1) +
-          "/" +
-          vueDate.getDate()
+          vueDate.Format("yyyy-MM-dd")
         );
       },
       handleDatePoper: function (e) {

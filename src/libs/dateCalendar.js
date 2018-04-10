@@ -30,12 +30,10 @@ dateCalendar.init = function () {
         '钟春苑',
         '杨柳',
         '彭小琴',
-        '黄楚欣',
         '江秀云',
         '林华清',
         '郭梓豪',
         '何锦文',
-        'zhangshan'
       ],
       onRest: []
     }
