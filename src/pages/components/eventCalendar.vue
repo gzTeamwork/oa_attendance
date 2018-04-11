@@ -97,7 +97,7 @@
         console.log("捕捉到当前用户休息日数据");
         vm.restEvents = restDays;
         restDays.map(function (re) {
-          console.log(re);
+          // console.log(re);
           vm.calenderEvents.map(function (ce) {
             let cet = new Date(ce.date).Format("yyyy-MM-dd");
             // console.log(cet);

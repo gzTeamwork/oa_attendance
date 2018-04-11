@@ -1,36 +1,66 @@
 import Axios from "axios";
 import VueCookie from "vue-cookies";
 import EventBus from "@/libs/eventBus.js";
+import apiConfig from "./apiConfig.js";
 
 // 接口配置
-const configs = {
-  corpId: "wwdc02ce3b575253e3",
-  corpSecret: "ipWlHNDjalbGoLOqB2mCR4lNz2GqgiSmx03OJms8PDw",
-  appSecrect: "bLhYfEQsgz1zO5Y1kmoCQi_p96ZVCC65uRovbEX-qPM",
-  agentId: "1000034"
-};
+const configs = apiConfig;
+// const configs = {
+//   corpId: "wwdc02ce3b575253e3",
+//   corpSecret: "ipWlHNDjalbGoLOqB2mCR4lNz2GqgiSmx03OJms8PDw",
+//   appSecrect: "bLhYfEQsgz1zO5Y1kmoCQi_p96ZVCC65uRovbEX-qPM",
+//   agentId: "1000034"
+// };
 
 // 接口地址
 
 let surl = "http://oa.emking.cn/inforward/api/";
 // let surl = 'http://admin.localhost.com/inforward/api/';
 
+//  构造axios实例
+
+let vueAxios = Axios.create({
+  baseURL: surl,
+  timeout: 3000,
+  headers: { "Access-Control-Allow-Origin": "*" }
+});
+
+vueAxios.interceptors.request.use(
+  function(config) {
+    // 在发送请求之前做些什么
+
+    return config;
+  },
+  function(error) {
+    // 对请求错误做些什么
+    return Promise.reject(error);
+  }
+);
+
+/**** 接口方法 ****/
+
+let buildParams = function(params) {
+  return (params.agent_id = configs.agentId);
+};
+
 //  连接服务器 - 换取token
 let getAppToken = function(corpId, corpSecret) {
-  Axios.get(surl + "wx_work_connect", {
-    params: {
-      corp_id: corpId || configs.corpId,
-      corp_secret: corpSecret || configs.corpSecret
-    }
-  }).then(res => {
-    if (res.status == 200 && res.data.token !== undefined) {
-      console.log("连接服务器成功!!");
-      EventBus.$emit("appToken", res.data.token);
-      return res.data.token;
-    } else {
-      console.log("链接服务器失败");
-    }
-  });
+  vueAxios
+    .get(surl + "wx_work_connect", {
+      params: {
+        corp_id: corpId || configs.corpId,
+        corp_secret: corpSecret || configs.corpSecret
+      }
+    })
+    .then(res => {
+      if (res.status == 200 && res.data.token !== undefined) {
+        console.log("连接服务器成功!!");
+        EventBus.$emit("appToken", res.data.token);
+        return res.data.token;
+      } else {
+        console.log("链接服务器失败");
+      }
+    });
 };
 
 //  用户登录交互 - 带token
@@ -60,7 +90,7 @@ let getRestEventsByMonth = function(today) {
     }
   }).then(res => {
     if (res.status === 200) {
-      EventBus.$emit("curUserRestDay",res.data);
+      EventBus.$emit("curUserRestDay", res.data);
       console.log("通过服务器获取到当月休假时间");
       return res.data;
     } else {
@@ -80,14 +110,46 @@ let getUserInfo = function(userCode) {
     if (res.status == 200) {
       console.log("成功获取用户信息");
       console.log(res.data);
+      //  抛出用户信息
       EventBus.$emit("userInfo", res.data);
+      //  缓存用户票据
+      VueCookie.set("userTicket", res.data.user_ticket, 7200);
       return (result = res.data);
     } else {
+      EventBus.$emit("toastMsg", "用户授权失败");
       console.log(res.errmsg);
     }
   });
 };
 
+//  获取用户信息 - 用户票据
+let getUserInfoByTicket = function(userTicket) {
+  let result = null;
+  Axios.get(surl + "get_user_info_by_ticket", {
+    params: {
+      user_ticket: userTicket || null
+    }
+  }).then(res => {
+    if (res.status === 200) {
+      console.log("成功获取用户票据");
+      EventBus.$emit("userInfo", res.data);
+    }
+  });
+};
+
+let getUserInfoById = function(userId) {
+  let result = null;
+  Axios.get(surl + "get_user_info_by_id", {
+    params: {
+      user_id: userId || null
+    }
+  }).then(res => {
+    if (res.status === 200) {
+      console.log("成功获取用户信息");
+      EventBus.$emit("userInfo", res.data);
+    }
+  });
+};
 //  获取用户的休假日
 let getRestDayByUser = function(userid) {
   let result = "";
@@ -129,6 +191,7 @@ let setuserAttendance = function(oldRestDay, restDay, userId) {
     .catch(error => {});
 };
 const serverApi = {
+  buildParams: buildParams,
   configs: configs,
   connect: getAppToken,
   getAppToken: getAppToken,

@@ -1,3 +1,4 @@
+//  解释url
 let getUrlJson = function(url) {
   url = url == null ? window.location.href : url;
   var search = url.substring(url.lastIndexOf("?") + 1);
@@ -12,8 +13,23 @@ let getUrlJson = function(url) {
   });
   return obj;
 };
+
+//  对象转数组,浅复制
+let objectToArray = function(ob) {
+  let arr = [];
+  console.log(ob);
+  
+  ob.keys(obj).forEach(v => {
+    let o = {};
+    o[v] = obj[v];
+    arr.push(o);
+  });
+  return arr;
+};
+
 const helper = {
-  getUrlJson: getUrlJson
+  getUrlJson: getUrlJson,
+  getO2A: objectToArray
 };
 
 export default helper;

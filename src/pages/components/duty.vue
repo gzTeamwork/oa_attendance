@@ -74,21 +74,22 @@
       //  用户信息初始化
 
       //  1.用户缓存和捕捉code参数
-      let params = vm.$helper.getUrlJson(window.location.href);
-      let userCode = params.code || null
+      // let params = vm.$helper.getUrlJson(window.location.href);
+      // let userCode = params.code || null
 
-      if (userCode == null) {
-        //  没有用户缓存,也没有返回用户code,跳转申请
-        vm.$weixinApi.getUserAuth();
-        // vm.needLogin = true;
-      } else {
-        //  有user_code返回码,则丢给服务器更新用户信息
-        let userInfo = vm.$serverApi.getUserInfo(userCode);
-      }
+      // if (userCode == null) {
+      //   //  没有用户缓存,也没有返回用户code,跳转申请
+      //   vm.$weixinApi.getUserAuth();
+      //   // vm.needLogin = true;
+      // } else {
+      //   //  有user_code返回码,则丢给服务器更新用户信息
+      //   let userInfo = vm.$serverApi.getUserInfo(userCode);
+      // }
 
     },
     created: function () {
       let vm = this;
+
       EventBus.$on("needAuth", data => {
         console.log("捕捉到needAuth" + data);
         vm.needLogin = data;
@@ -99,6 +100,8 @@
         console.log("捕捉用户信息成功")
         //  缓存userInfo
         vm.$cookies.set("userInfo", user, "1d");
+        //  拿到用户信息之后，缓存用户信息
+
         vm.userInfo = user;
         vm.needLogin = false;
         // 有了userid,就获取对应的休假日
@@ -108,8 +111,7 @@
       //  接收当前用户休假日
       EventBus.$on("curUserRestDay", days => {
         console.log("捕捉当前用户休假日数据");
-        vm.workerRestDays = days || [];
-
+        vm.workerRestDays = vm.$helper.getO2A(days);
       })
 
       //  接收AppToken
