@@ -17,9 +17,9 @@
               </mu-col>
             </mu-row>
             <mu-row gutter>
-                <mu-col width="100">
-                    <mu-icon color="lightGreen500" slot="left" value="alarm_off" /> 正常上班 共{{event.onDuty.length}}人
-                  </mu-col>
+              <mu-col width="100">
+                <mu-icon color="lightGreen500" slot="left" value="alarm_off" /> 正常上班 共{{event.onDuty.length}}人
+              </mu-col>
               <mu-col v-for="(duser , dindex) in event.onDuty" :key="index+'2onDuty'+dindex" width="50" tablet="50" desktop="50">
                 <mu-list-item describeText="正常上班" :title="duser">
                   <mu-icon color="lightGreen500" slot="right" value="alarm_on" />
@@ -93,8 +93,8 @@
       dateCalendar.init();
       vm.calenderEvents = dateCalendar.events;
 
-      EventBus.$on("curUserRestDay", function (restDays) {
-        console.log("捕捉到当前用户休息日数据");
+      EventBus.$on("curMonthRests", function (restDays) {
+        console.log("捕捉到当月休假时间");
         vm.restEvents = restDays;
         restDays.map(function (re) {
           // console.log(re);
@@ -109,6 +109,7 @@
               let existDutyIndex = ce.onDuty.indexOf(re.userid);
 
               existDutyIndex < 0 || ce.onDuty.splice(existDutyIndex, 1);
+              
               //  2.onRest列表插入对应用户
               let existIndex = ce.onRest.indexOf(re.userid);
               existIndex == -1 ?

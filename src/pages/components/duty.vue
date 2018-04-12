@@ -20,11 +20,11 @@
       </mu-card-title>
       <mu-badge :content="userInfo.position||'员工'" primary slot="after" />
       <mu-card>
-        <mu-card-title :title="'本月排休 '+restDay+' 天 '" subTitle="Rest Days" />
-        <div v-for="item in restDay" :key="item">
-          <div>第{{item}}天</div>
-          <mu-date-picker hintText="选择排休日期" :firstDayOfWeek="0" :minDate="minDate" :maxDate="maxDate" :shouldDisableDate="getDisableDate"
-            @change="datePickerChange($event,item)" :value="workerRestDays[item-1].date" />
+        <mu-card-title :title="'本月排休 '+ workerRestDays.length +' 天 '" subTitle="Rest Days" />
+        <div v-for="(item,index) in workerRestDays" :key="index">
+          <div>第{{index+1}}天</div>
+          <mu-date-picker hintText="选择排休日期" :firstDayOfWeek="0" :minDate="minDate" :maxDate="maxDate" :disabled="isabledDay(item.date)"
+            :shouldDisableDate="getDisableDate" @change="datePickerChange($event,index)" :value="item.date" />
         </div>
       </mu-card>
     </div>
@@ -71,21 +71,6 @@
     },
     beforeCreate: function () {
       let vm = this;
-      //  用户信息初始化
-
-      //  1.用户缓存和捕捉code参数
-      // let params = vm.$helper.getUrlJson(window.location.href);
-      // let userCode = params.code || null
-
-      // if (userCode == null) {
-      //   //  没有用户缓存,也没有返回用户code,跳转申请
-      //   vm.$weixinApi.getUserAuth();
-      //   // vm.needLogin = true;
-      // } else {
-      //   //  有user_code返回码,则丢给服务器更新用户信息
-      //   let userInfo = vm.$serverApi.getUserInfo(userCode);
-      // }
-
     },
     created: function () {
       let vm = this;
@@ -111,7 +96,15 @@
       //  接收当前用户休假日
       EventBus.$on("curUserRestDay", days => {
         console.log("捕捉当前用户休假日数据");
-        vm.workerRestDays = vm.$helper.getO2A(days);
+        // vm.workerRestDays = vm.$helper.getO2A(days);
+        if (days.length < 2) {
+          for (let i = days.length; i < 2; i++) {
+            days.push({
+              date: null
+            });
+          }
+        }
+        vm.workerRestDays = days;
       })
 
       //  接收AppToken
@@ -120,26 +113,15 @@
         vm.appToken = token;
       });
 
-      if (vm.needLogin === false) {
-        let date = new Date();
-        vm.today = date.Format("yyyy/MM/dd");
-        vm.minDate = date.Format("yyyy-MM-dd");
+      let date = new Date();
+      vm.today = date.Format("yyyy/MM/dd");
+      vm.minDate = date.Format("yyyy-MM-dd");
 
-        //    上个月1号
-        date.setDate(-1);
-        date.setMonth(date.getMonth() + 1);
-        vm.maxDate = new Date(date).Format("yyyy-MM-dd");
+      //    上个月1号
+      date.setDate(-1);
+      date.setMonth(date.getMonth() + 1);
+      vm.maxDate = new Date(date).Format("yyyy-MM-dd");
 
-        /**  服务器数据准备阶段  **/
-
-        //  1.获取用户对应当月排休日期数
-        // let restDays = vm.$serverApi.getRestDayByUser(
-        //   vm.appToken,
-        //   vm.userInfo.userid || null
-        // );
-
-        // vm.restDay = restDays.length || 2;
-      }
     },
     methods: {
       getToday: function () {
@@ -160,9 +142,10 @@
       //  返回不可选日期
       getDisableDate: function (date) {
         let vm = this;
+        let dateDate = new Date(date)
         //    获取无法被选定的排休日期
-        let dateDay = date.getDay();
-        let dateLocalDate = date.toLocaleDateString();
+        let dateDay = dateDate.getDay();
+        let dateLocalDate = dateDate.toLocaleDateString();
         if (dateDay === 6 || dateDay === 0) {
           return true;
         } else if (
@@ -179,16 +162,34 @@
           return false;
         }
       },
+      //  可选日期
+      isabledDay: function (date) {
+        let vm = this;
+        if (date == null) {
+          return false;
+        }
+        let dateDate = new Date(date);
+        let todayDate = new Date();
+        return (dateDate.getDate() - todayDate.getDate()) < 0;
+      },
       //  日期选择
       datePickerChange: function (date, item) {
         let vm = this;
+
         let dateDate = new Date(date);
-        let odate = vm.workerRestDays[item - 1].date;
-        vm.workerRestDays[item - 1].date = date;
+        let validDay = vm.getDisableDate(date);
+        if (validDay) {
+          vm.toast.msg = date + "此日期为不可选"
+          return false;
+        }
+        let odate = vm.workerRestDays[item].date;
+        vm.workerRestDays[item].date = date;
         vm.toast.msg = "选择日期" + item + "为" + date;
         //  提交当前日期
-        let res = vm.$serverApi.attendSubmit(odate, date, vm.userInfo.userid);
-        vm.toast.msg = res ? '提交休假成功' : '提交休假失败!!'
+        let res = vm.$serverApi.attendSubmit(odate, date, vm.userInfo.userid,vm.userInfo.name);
+        console.log(res);
+
+        vm.toast.msg = res != undefined ? '提交休假成功' : '提交休假失败!!'
       },
       //  获取用户信息
       handleUserAuth: function () {

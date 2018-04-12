@@ -40,7 +40,6 @@ dateCalendar.init = function () {
     let dateDay = dateToday.getDay()
     if (
       dateDay > 0 &&
-      dateDay < 6 &&
       dateToday.toLocaleDateString !== event.date
     ) {
       this.events.push(event)

@@ -21,8 +21,8 @@ let surl = "http://oa.emking.cn/inforward/api/";
 
 let vueAxios = Axios.create({
   baseURL: surl,
-  timeout: 3000,
-  headers: { "Access-Control-Allow-Origin": "*" }
+  timeout: 3000
+  // headers: { "Access-Control-Allow-Origin": "*" }
 });
 
 vueAxios.interceptors.request.use(
@@ -90,7 +90,7 @@ let getRestEventsByMonth = function(today) {
     }
   }).then(res => {
     if (res.status === 200) {
-      EventBus.$emit("curUserRestDay", res.data);
+      EventBus.$emit("curMonthRests", res.data);
       console.log("通过服务器获取到当月休假时间");
       return res.data;
     } else {
@@ -147,6 +147,7 @@ let getUserInfoById = function(userId) {
     if (res.status === 200) {
       console.log("成功获取用户信息");
       EventBus.$emit("userInfo", res.data);
+      EventBus.$emit("needAuth", false);
     }
   });
 };
@@ -169,19 +170,20 @@ let getRestDayByUser = function(userid) {
 };
 
 //  提交用户排班数据
-let setuserAttendance = function(oldRestDay, restDay, userId) {
+let setuserAttendance = function(oldRestDay, restDay, userId, userName) {
   let result = "";
   Axios.get(surl + "set_user_attendance", {
     params: {
       old_day: oldRestDay || null,
       rest_day: restDay,
-      user_id: userId
+      user_id: userId,
+      user_name: userName,
+      status: "rest"
     }
   })
     .then(res => {
       if (res.status === 200) {
         console.log("当前用户提交休假日期成功!");
-
         return true;
       } else {
         console.log(res.errmsg);
@@ -201,6 +203,7 @@ const serverApi = {
   getUserInfo: getUserInfo,
   attendSubmit: setuserAttendance,
   getRestEventsByMonth: getRestEventsByMonth,
-  getRestDayByUser: getRestDayByUser
+  getRestDayByUser: getRestDayByUser,
+  getUserInfoById: getUserInfoById
 };
 export default serverApi;
