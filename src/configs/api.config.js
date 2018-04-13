@@ -6,3 +6,4 @@ const apiConfigs = {
   agentId: '1000034'
 }
 export default apiConfigs
+

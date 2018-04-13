@@ -1,12 +1,14 @@
 <template>
   <div id='fullCalendar'>
-    <vuefullCalendar :events="fcEvents" locale="en">
+    <vuefullCalendar :events="fcEvents"
+                     locale="zh-cn">
     </vuefullCalendar>
   </div>
 </template>
 
 <script>
 import vuefullCalendar from "vue-fullcalendar";
+import EventBus from "@/libs/eventBus.js";
 export default {
   name: "fullCalendar",
   data() {
@@ -14,29 +16,42 @@ export default {
       fcEvents: fcEvents
     };
   },
+  beforeCreate: function() {
+    let vm = this;
+    let todayDate = new Date();
+    //  问服务器获取当月休假
+    vm.$serverApi.getRestEventsByMonth(todayDate.Format("yyyy-MM-dd"));
+
+    //  问服务器获取排班人员数据
+    vm.$serverApi.getAllUser();
+  },
+  created: function() {
+    let vm = this;
+    EventBus.$on("curMonthRests", days => {
+      days.map(day => {
+        vm.fcEvents.push({
+          title: day.username,
+          start: day.date,
+          original: day,
+          color: 'yellow',
+        });
+      });
+    });
+  },
   components: {
     vuefullCalendar
   }
 };
 const fcEvents = [
-  {
-    title: "event1",
-    start: "2018-04-01",
-    cssClass: "family",
-    YOUR_DATA: {}
-  },
-  {
-    title: "event2",
-    start: "2018-04-12",
-    end: "2018-07-03",
-    cssClass: ["family", "career"],
-    YOUR_DATA: {}
-  }
+
 ];
 </script>
 
 <style scoped>
-  .comp-full-calendar {
-    padding: 20px 0;
-  }
+.comp-full-calendar {
+  padding: 20px 0;
+}
+#fullCalendar .career {
+  background: brown!important;
+}
 </style>
