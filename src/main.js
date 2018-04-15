@@ -31,6 +31,9 @@ Vue.prototype.$serverApi = serverApi
 import weixinApi from '@/libs/weixinApi.js'
 Vue.prototype.$weixinApi = weixinApi
 
+// //  引入eventbus
+// import eventBus from '@/libs/eventBus.js'
+// Vue.prototype.$eventBus = eventBus
 //  引入事件promise
 import vueMethodsPromise from 'vue-methods-promise'
 
@@ -50,6 +53,7 @@ Vue.use(vueMethodsPromise, {
 
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
+Vue.$nprogress = NProgress
 
 import App from './App'
 import router from './router'

@@ -13,8 +13,8 @@
     beforeCreate: function () {
       let vm = this;
       //  向服务器连接拿appToken
-      let appToken = vm.$serverApi.getAppToken();
-      EventBus.$emit("appToken", appToken);
+      // let appToken = vm.$serverApi.getAppToken();
+      // EventBus.$emit("appToken", appToken);
     }
   };
 
@@ -22,7 +22,6 @@
 
 <style>
   #app {
-    font-family: "Avenir", Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-align: center;

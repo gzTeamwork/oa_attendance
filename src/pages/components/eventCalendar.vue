@@ -1,47 +1,47 @@
 <template>
   <div id='vueEventsCalendar'>
-    <h2>员工休假表</h2>
     <vue-event-calendar :events="calenderEvents"
                         @day-changed="handleDayChanged"
                         @month-changed="handleMonthChanged"
                         :style='{"margin-bottom":"0"}'>
       <template slot-scope="props">
-        <div v-for="(events,index) in props.showEvents"
-             :key="'event'+index">
-
-          <mu-row v-if="events.onRest"
-                  class="event-item"
-                  gutter>
-            <mu-col width="100">休假</mu-col>
-            <mu-col width="50"
-                    v-for="(event , index) in events.onRest"
-                    :key="'rest'+index">
-              <mu-list-item :describeText="'休假'"
-                            :title="event.username"
-                            @click="handleEventClick(event)">
-                <mu-icon color="pink500"
-                         slot="right"
-                         value="alarm_off" />
-              </mu-list-item>
-            </mu-col>
-          </mu-row>
-          <mu-row v-if="events.onDuty"
-                  class="event-item"
-                  gutter>
-            <mu-col width="100">上班</mu-col>
-            <mu-col width="50"
-                    v-for="(event , index) in events.onDuty"
-                    :key="'duty'+index">
-              <mu-list-item :title="event.name"
-                            :describeText="'上班'"
-                            @click="handleEventClick(event)">
-                <mu-icon color="lightGreen500"
-                         slot="right"
-                         value="alarm_on" />
-              </mu-list-item>
-            </mu-col>
-          </mu-row>
-        </div>
+        <transition-group enter-active-class="animated fadeIn">
+          <div v-for="(events,index) in props.showEvents"
+               :key="'event'+index">
+            <mu-row v-if="events.onRest"
+                    class="event-item"
+                    gutter>
+              <mu-col width="100">休假</mu-col>
+              <mu-col width="50"
+                      v-for="(event , index) in events.onRest"
+                      :key="'rest'+index">
+                <mu-list-item :describeText="'休假'"
+                              :title="event.username"
+                              @click="handleEventClick(event)">
+                  <mu-icon color="pink500"
+                           slot="right"
+                           value="alarm_off" />
+                </mu-list-item>
+              </mu-col>
+            </mu-row>
+            <mu-row v-if="events.onDuty"
+                    class="event-item"
+                    gutter>
+              <mu-col width="100">上班</mu-col>
+              <mu-col width="50"
+                      v-for="(event , index) in events.onDuty"
+                      :key="'duty'+index">
+                <mu-list-item :title="event.name"
+                              :describeText="'上班'"
+                              @click="handleEventClick(event)">
+                  <mu-icon color="lightGreen500"
+                           slot="right"
+                           value="alarm_on" />
+                </mu-list-item>
+              </mu-col>
+            </mu-row>
+          </div>
+        </transition-group>
       </template>
     </vue-event-calendar>
   </div>
@@ -69,9 +69,7 @@ export default {
   data() {
     return {
       templateMode: true,
-      curMonthEvents: [],
       calenderEvents: [],
-      restEvents: [],
       appToken: null
     };
   },
@@ -91,26 +89,26 @@ export default {
     let vm = this;
     //  定位今天
 
-    // 接收当月休息数据
-    EventBus.$on("curMonthRests", function(restDays) {
-      console.log("捕捉到当月休假时间");
-      vm.restEvents = restDays;
-      let events = [];
-      restDays.map(function(re) {
-        events.push({
-          date: new Date(re.date).Format("yyyy/MM/dd"),
-          title: "休假",
-          name: re.username
-        });
-      });
-      vm.calenderEvents = events;
-    });
+    // // 接收当月休息数据
+    // EventBus.$on("curMonthRests", function(restDays) {
+    //   console.log("捕捉到当月休假时间");
+    //   vm.restEvents = restDays;
+    //   let events = [];
+    //   restDays.map(function(re) {
+    //     events.push({
+    //       date: new Date(re.date).Format("yyyy/MM/dd"),
+    //       title: "休假",
+    //       name: re.username
+    //     });
+    //   });
+    //   vm.calenderEvents = events;
+    // });
 
     //  接收当月排班数据
     EventBus.$on("curMonthEvents", events => {
       console.log("接收当月排班数据");
       events.map((e, i) => {
-        events[i].date = new Date(e.date).Format("yyyy/M/d");
+        events[i].date = new Date(e.date).Format("yyyy/MM/dd");
         events[i].title = "日历事件";
       });
       vm.calenderEvents = events;
@@ -118,7 +116,7 @@ export default {
   },
   mounted: function() {
     let vm = this;
-    setTimeout(()=> {
+    setTimeout(() => {
       vm.$EventCalendar.toDate(today);
     }, 1000);
   },
@@ -130,6 +128,7 @@ export default {
     //  月份切换事件
     handleMonthChanged: dateEvent => {
       console.log(dateEvent);
+      return false
     },
     handleEventClick: function(event) {
       // this.$EventCalendar.toDate(event.date);
@@ -140,11 +139,12 @@ export default {
 </script>
 
 <style>
-.item .is-event {
+.item .is-event,.is-today {
   border-radius: 2px !important;
 }
 
 .small-list {
   padding: 0.5em;
 }
+
 </style>

@@ -1,3 +1,4 @@
+// @destroyed 本类已弃用
 //  日历类
 const dateCalendar = { events: [] }
 //  日历初始化

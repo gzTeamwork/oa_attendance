@@ -28,23 +28,29 @@
       <mu-badge :content="userInfo.position||'员工'"
                 primary
                 slot="after" />
-      <mu-card>
-        <mu-card-title :title="'本月排休 '+ workerRestDays.length +' 天 '"
-                       subTitle="Rest Days" />
-        <div v-for="(item,index) in workerRestDays"
-             :key="index">
-          <div>第{{index+1}}天</div>
-          <mu-date-picker hintText="选择排休日期"
-                          :firstDayOfWeek="0"
-                          :minDate="minDate"
-                          :maxDate="maxDate"
-                          :disabled="isabledDay(item.date)"
-                          :shouldDisableDate="getDisableDate"
-                          @change="datePickerChange($event,index)"
-                          :value="item.date" />
+      <mu-card-title :title="'本月排休 '+ workerRestDays.length +' 天 '"
+                     subTitle="Rest Days" />
+      <mu-paper v-for="(item,index) in workerRestDays"
+                :key="index"
+                style="margin-top:0.5em">
+
+        <div>第{{index+1}}天
+          <p v-if="isabledDay(item.date)">
+          此休息日已经过期,无法修改
+        </p>
         </div>
-      </mu-card>
+        <mu-date-picker hintText="选择排休日期"
+                        :firstDayOfWeek="0"
+                        :minDate="minDate"
+                        :maxDate="maxDate"
+                        :disabled="isabledDay(item.date)"
+                        :shouldDisableDate="getDisableDate"
+                        @change="datePickerChange($event,index)"
+                        :value="item.date" />
+        
+      </mu-paper>
     </div>
+  </div>
 
   </div>
 </template>
@@ -125,11 +131,11 @@ export default {
       vm.workerRestDays = days;
     });
 
-    //  接收AppToken
-    EventBus.$on("appToken", token => {
-      console.log("捕捉appToken" + token);
-      vm.appToken = token;
-    });
+    // //  接收AppToken
+    // EventBus.$on("appToken", token => {
+    //   console.log("捕捉appToken" + token);
+    //   vm.appToken = token;
+    // });
 
     let date = new Date();
     vm.today = date.Format("yyyy/MM/dd");
@@ -186,7 +192,7 @@ export default {
       let dateDate = new Date(date);
       let todayDate = new Date();
       console.log(dateDate.getDate() - todayDate.getDate());
-      return (dateDate - todayDate) < 0;
+      return dateDate - todayDate < 0;
     },
     //  日期选择
     datePickerChange: function(date, item) {
@@ -242,12 +248,16 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 .demo-float-button {
   margin: 0 1em;
 }
 
 .mu-text-field-input {
   text-align: center !important;
+}
+
+input.mu-text-field-input:disabled::after {
+  content: "此休息日已经过期,无法修改";
 }
 </style>

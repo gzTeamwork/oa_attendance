@@ -4,6 +4,7 @@
   <div id='index'>
     <muse-toast :msg="toast.msg"></muse-toast>
     <mu-tabs :value="activeTab"
+             icon="clock"
              @change="handleTabChange">
       <mu-tab value="tabEventCalendar"
               title="排班" />
@@ -14,11 +15,11 @@
               title="报餐" />
     </mu-tabs>
     <transition-group name="flip"
-                      enter-active-class="animated fadeInDown">
+                      enter-active-class="animated fadeIn">
       <div v-show="activeTab === 'tabEventCalendar'"
            :key="1">
         <keep-alive>
-          <comEventCalendar></comEventCalendar>
+          <com-eventCalendar></com-eventCalendar>
         </keep-alive>
       </div>
       <!-- <div v-if="activeTab === 'tabFullCalendar'">
@@ -27,7 +28,7 @@
       <div v-show="activeTab === 'tabOnDuty'"
            :key="2">
         <keep-alive>
-          <comDuty></comDuty>
+          <com-duty></com-duty>
         </keep-alive>
       </div>
       <div v-show="activeTab === 'tabDailyMeal'"
@@ -41,9 +42,12 @@
 </template>
 
 <script>
-import museToast from "@/components/museToast.vue";
+import Vue from "vue";
+import nprogress from "nprogress";
+// import museToast from "@/components/museToast.vue";
 import EventBus from "@/libs/eventBus.js";
 
+let museToast = () => import("@/components/museToast.vue");
 //  加载事件日历
 let comEventCalendar = () => import("./components/eventCalendar.vue");
 //  加载日历组件
@@ -52,7 +56,7 @@ let comEventCalendar = () => import("./components/eventCalendar.vue");
 let comDuty = () => import("./components/duty.vue");
 
 //  加载报餐
-let comDailyMeal = ()=>import("./components/dailyMeal.vue");
+let comDailyMeal = () => import("./components/dailyMeal.vue");
 
 export default {
   name: "index",
@@ -65,16 +69,15 @@ export default {
     };
   },
   components: {
-    comDuty,
-    // comFullCalendar,
-    comEventCalendar,
-    "com-dailyMeal":comDailyMeal,
+    "com-duty": comDuty,
+    "com-eventCalendar": comEventCalendar,
+    "com-dailyMeal": comDailyMeal,
     "muse-toast": museToast
   },
   beforeCreate: function() {
     //  应用初始化
     let vm = this;
-    //  1.用户缓存和捕捉code参数
+    //  用户缓存和捕捉code参数
     let params = vm.$helper.getUrlJson(window.location.href);
     let userCode = params.code || null;
     let userState = params.state || null;
@@ -82,32 +85,36 @@ export default {
 
     //  开发专用 - 模拟授权登陆
     let userId = params.user_id || null;
-    if (userId !== null) {
-      vm.$serverApi.getUserInfoById(userId);
-      return;
-    }
-
-    //  2.用户验证状态码
-    if (userTicket == null) {
-      if (userCode == null) {
-        // 没票,也没有code,跳转授权
-        // vm.$weixinApi.getUserAuth();
-        EventBus.$emit("needAuth", true);
+    // if (userId !== null) {
+      // vm.$serverApi.getUserInfoById(userId);
+    // } else {
+      //  2.用户验证状态码
+      if (userTicket == null) {
+        if (userCode == null) {
+          // 没票,也没有code,跳转授权
+          vm.$weixinApi.getUserAuth();
+          // EventBus.$emit("needAuth", true);
+        } else {
+          // 有code,则丢给服务器更新用户信息
+          vm.$serverApi.getUserInfo(userCode);
+        }
       } else {
-        // 有code,则丢给服务器更新用户信息
-        vm.$serverApi.getUserInfo(userCode);
+        //  有票,丢服务器拿用户信息
+        vm.$serverApi.getUserInfoByTicket(userTicket);
       }
-    } else {
-      //  有票,丢服务器拿用户信息
-      vm.$serverApi.getUserInfoByTicket(userTicket);
-    }
+    // }
+  },
+  created:function(){
   },
   methods: {
-    //  tab页切换时间
+    //  tab页切换事件
     handleTabChange: function(val) {
       let vm = this;
-      console.log(val);
-      vm.activeTab = val;
+      Vue.$nprogress.start();
+      setTimeout(() => {
+        vm.activeTab = val;
+        Vue.$nprogress.done(true);
+      }, 700);
     },
     //  tab页点击事件
     handleActive: e => {}
