@@ -108,7 +108,7 @@ export default {
     EventBus.$on("curMonthEvents", events => {
       console.log("接收当月排班数据");
       events.map((e, i) => {
-        events[i].date = new Date(e.date).Format("yyyy/MM/dd");
+        events[i].date = new Date(e.date).Format("yyyy/M/d");
         events[i].title = "日历事件";
       });
       vm.calenderEvents = events;

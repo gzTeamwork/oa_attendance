@@ -62,7 +62,7 @@ export default {
   name: "index",
   data() {
     return {
-      activeTab: "tabEventCalendar",
+      activeTab: "tabDailyMeal",
       toast: {
         msg: ""
       }
@@ -92,8 +92,8 @@ export default {
       if (userTicket == null) {
         if (userCode == null) {
           // 没票,也没有code,跳转授权
-          vm.$weixinApi.getUserAuth();
-          // EventBus.$emit("needAuth", true);
+          // vm.$weixinApi.getUserAuth();
+          EventBus.$emit("needAuth", true);
         } else {
           // 有code,则丢给服务器更新用户信息
           vm.$serverApi.getUserInfo(userCode);
