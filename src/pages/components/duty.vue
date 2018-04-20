@@ -39,7 +39,6 @@
 
 <script>
   import museToast from "@/components/museToast.vue";
-  import EventBus from "@/libs/eventBus.js";
   import defaultAvatar from "@/assets/avatar.png";
   const vueDate = new Date();
 
