@@ -90,7 +90,7 @@
         console.log("接收当月排班数据");
         events.map((e, i) => {
           let event = events[i];
-          event.date = new Date(e.date).Format("yyyy/M/d");
+          event.date = new Date(e.date).Format("yyyy/MM/dd");
           event.title = "日历事件";
           newEvents.push(event);
         });
