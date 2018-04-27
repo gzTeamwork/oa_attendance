@@ -16,6 +16,10 @@ Vue.use(MuseUI)
 //  引入jQuery
 import jQuery from 'jquery'
 
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
+Vue.$nprogress = NProgress
+
 //  引入cookies
 import VueCookie from 'vue-cookies'
 Vue.use(VueCookie)
@@ -23,6 +27,8 @@ Vue.use(VueCookie)
 //  引入axios
 import vueAxios from 'axios'
 Vue.prototype.$http = vueAxios
+
+
 
 //  引入服务器类
 import serverApi from '@/libs/serverApi.js'
@@ -51,20 +57,18 @@ Vue.use(vueMethodsPromise, {
   }
 })
 
-import NProgress from 'nprogress'
-import 'nprogress/nprogress.css'
-Vue.$nprogress = NProgress
-
 import App from './App'
 import router from './router'
 Vue.config.productionTip = false
-window.EventBus = new Vue();
+window.EventBus = new Vue()
 
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,
-  components: { App },
+  components: {
+    App
+  },
   template: '<App/>'
 })
 

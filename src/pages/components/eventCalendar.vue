@@ -1,5 +1,12 @@
 <template>
   <div id='vueEventsCalendar'>
+  <muse-popupMsg :msg="msg"></muse-popupMsg>
+    <mu-appbar>
+      <div slot="default">排班日历表
+      </div>
+      <mu-icon-button icon="today" slot="left" @click="handleGoToday"></mu-icon-button>
+      <mu-icon-button icon="refresh" slot="right" @click="handleRefresh"></mu-icon-button>
+    </mu-appbar>
     <vue-event-calendar :events="calenderEvents" @day-changed="handleDayChanged" @month-changed="handleMonthChanged" :style='{"margin-bottom":"0"}'>
       <template slot-scope="props">
         <transition-group enter-active-class="animated fadeIn">
@@ -28,117 +35,129 @@
 </template>
 
 <script>
-  // 引入日历插件
-  import Vue from "vue";
-  // import EventBus from "@/libs/eventBus.js";
-  import "vue-event-calendar/dist/style.css";
-  import vueEventCalendar from "vue-event-calendar";
-  Vue.use(vueEventCalendar, {
-    locale: "zh",
-    // color: "#7e57c2",
-    color: "#404347"
-  });
+// 引入日历插件
+import Vue from "vue";
+import "vue-event-calendar/dist/style.css";
+import vueEventCalendar from "vue-event-calendar";
+Vue.use(vueEventCalendar, {
+  locale: "zh",
+  // color: "#7e57c2",
+  color: "#404347"
+});
 
-  // import dateCalendar from "@/libs/dateCalendar.js";
+let dateToday = new Date();
+let today = dateToday.Format("yyyy/M/d");
+let todayDate = dateToday.Format("yyyy/MM/dd hh:mm:ss");
 
-  let dateToday = new Date();
-  let today = dateToday.Format("yyyy/M/d");
+export default {
+  name: "vueEventsCalendar",
+  data() {
+    return {
+      templateMode: true,
+      calenderEvents: [],
+      appToken: null,
+      msg: null
+    };
+  },
+  components: {
+    "muse-popupMsg": () => import("@/components/musePopupMsg.vue")
+  },
+  beforeCreate: function() {
+    let vm = this;
 
-  export default {
-    name: "vueEventsCalendar",
-    data() {
-      return {
-        templateMode: true,
-        calenderEvents: [],
-        appToken: null
-      };
-    },
-    beforeCreate: function () {
-      let vm = this;
+    //  问服务器获取当月休假
+    // vm.$serverApi.getRestEventsByMonth(today);
+    vm.$serverApi.getCurMonthEvents(today);
 
-      //  问服务器获取当月休假
-      // vm.$serverApi.getRestEventsByMonth(today);
-      vm.$serverApi.getCurMonthEvents(today);
+    //  问服务器获取排班人员数据
+    // vm.$serverApi.getAllUser();
+  },
+  created: function() {
+    let vm = this;
+    //  定位今天
 
-      //  问服务器获取排班人员数据
-      // vm.$serverApi.getAllUser();
+    // // 接收当月休息数据
+    // window.EventBus.$on("curMonthRests", function(restDays) {
+    //   console.log("捕捉到当月休假时间");
+    //   vm.restEvents = restDays;
+    //   let events = [];
+    //   restDays.map(function(re) {
+    //     events.push({
+    //       date: new Date(re.date).Format("yyyy/MM/dd"),
+    //       title: "休假",
+    //       name: re.username
+    //     });
+    //   });
+    //   vm.calenderEvents = events;
+    // });
 
-      //
-    },
-    created: function () {
-      let vm = this;
-      //  定位今天
-
-      // // 接收当月休息数据
-      // EventBus.$on("curMonthRests", function(restDays) {
-      //   console.log("捕捉到当月休假时间");
-      //   vm.restEvents = restDays;
-      //   let events = [];
-      //   restDays.map(function(re) {
-      //     events.push({
-      //       date: new Date(re.date).Format("yyyy/MM/dd"),
-      //       title: "休假",
-      //       name: re.username
-      //     });
-      //   });
-      //   vm.calenderEvents = events;
-      // });
-
-      //  接收当月排班数据
-      EventBus.$on("curMonthEvents", events => {
-        let newEvents = [];
-        console.log("接收当月排班数据");
-        events.map((e, i) => {
-          let event = events[i];
-          event.date = new Date(e.date).Format("yyyy/MM/dd");
-          event.title = "日历事件";
-          newEvents.push(event);
-        });
-        vm.calenderEvents = newEvents;
+    //  接收当月排班数据
+    window.EventBus.$on("curMonthEvents", events => {
+      let newEvents = [];
+      console.log("接收当月排班数据");
+      events.map((e, i) => {
+        let event = events[i];
+        event.date = new Date(e.date).Format("yyyy/MM/dd");
+        event.title = "日历事件";
+        newEvents.push(event);
       });
-    },
-    activated: function () {
-      vm.$serverApi.getCurMonthEvents(today);
-
-    },
-    mounted: function () {
+      vm.calenderEvents = newEvents;
+    });
+  },
+  activated: function() {
+    let vm = this;
+    vm.$serverApi.getCurMonthEvents(today);
+    vm.msg = "数据更新于" + dateNow.Format("yyyy-M-d h:m:s");
+  },
+  mounted: function() {
+    let vm = this;
+    setTimeout(() => {
+      vm.$EventCalendar.toDate(today);
+    }, 1000);
+  },
+  methods: {
+    //  日期切换事件
+    handleDayChanged: function(dateEvent) {
+      // console.log(dateEvent);
       let vm = this;
-      setTimeout(() => {
+      vm.msg = "当前选择日期为" + dateEvent.date;
+    },
+    //  月份切换事件
+    handleMonthChanged: function(dateEvent) {
+      console.log(dateEvent);
+      return false;
+    },
+    handleEventClick: function(event) {
+      // this.$EventCalendar.toDate(event.date);
+      // this.handleDayChanged(event.date);
+    },
+    handleGoToday: function(event) {
+      //  日历跳转到今天
+      let vm = this;
+      vm.$EventCalendar.toDate(today);
+      vm.msg = "日历日期回到今天";
+    },
+    handleRefresh: function(event) {
+      let vm = this;
+      vm.$serverApi.getCurMonthEvents(today);
+      setTimeout(function() {
         vm.$EventCalendar.toDate(today);
       }, 1000);
-    },
-    methods: {
-      //  日期切换事件
-      handleDayChanged: dateEvent => {
-        console.log(dateEvent);
-      },
-      //  月份切换事件
-      handleMonthChanged: dateEvent => {
-        console.log(dateEvent);
-        return false
-      },
-      handleEventClick: function (event) {
-        // this.$EventCalendar.toDate(event.date);
-        // this.handleDayChanged(event.date);
-      }
-    },
-    watch: {
-      // "calenderEvents": (v, ov) => {
-
-      // }
+      let dateNow = new Date();
+      vm.msg = "数据更新于" + dateNow.Format("yyyy-M-d h:m:s");
     }
-  };
-
+  },
+  watch: {}
+};
 </script>
 
 <style>
-  .item .is-event,
-  .is-today {
-    border-radius: 2px !important;
-  }
+.item .is-event,
+.is-today {
+  border-radius: 2px !important;
+}
 
-  .small-list {
-    padding: 0.5em;
-  }
-
+.small-list {
+  padding: 0.5em;
+}
 </style>
