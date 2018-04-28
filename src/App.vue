@@ -7,25 +7,23 @@
 </template>
 
 <script>
-  import EventBus from "@/libs/eventBus.js";
-  export default {
-    name: "App",
-    beforeCreate: function () {
-      let vm = this;
-      //  向服务器连接拿appToken
-      // let appToken = vm.$serverApi.getAppToken();
-      // EventBus.$emit("appToken", appToken);
-    }
-  };
-
+import EventBus from "@/libs/eventBus.js";
+export default {
+  name: "App",
+  beforeCreate: function() {
+    let vm = this;
+    //  向服务器连接拿appToken
+    // let appToken = vm.$serverApi.getAppToken();
+    // EventBus.$emit("appToken", appToken);
+  }
+};
 </script>
 
 <style>
-  #app {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: #2c3e50;
-  }
-
+#app {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+}
 </style>

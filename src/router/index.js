@@ -1,19 +1,23 @@
-import Vue from "vue";
-import Router from "vue-router";
-// import HelloWorld from '@/components/HelloWorld'
-const comIndex = () =>
-  import ("@/pages/index.vue");
+import Vue from 'vue'
+import Router from 'vue-router'
+import SubRouter from './subRouter'
 
-Vue.use(Router);
+const pageIndex = () =>
+  import ('@/pages/index.vue')
+const pageAppBar = () =>
+  import ('@/pages/appBar.vue')
+
+Vue.use(Router)
 
 export default new Router({
-  mode: "history",
+  mode: 'history',
   routes: [{
-    path: "/",
-    name: "index page",
-    component: comIndex,
+    path: '/',
+    name: 'index page',
+    component: pageAppBar,
     meta: {
-      title: "企业排版表"
-    }
+      title: '企业排版表'
+    },
+    children: SubRouter
   }]
-});
+})
