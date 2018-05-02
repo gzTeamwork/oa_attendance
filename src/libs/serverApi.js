@@ -20,8 +20,8 @@ console.log(devMode)
 // 接口地址 - 构建开发与生产api接口
 let remoteRoot = 'http://oa.emking.cn/inforward/api/'
 let localRoot = 'http://admin.localhost.com/inforward/api/'
-const apiRoot = devMode ? localRoot : remoteRoot
-
+let apiRoot = devMode ? localRoot : remoteRoot
+apiRoot = remoteRoot
 //  构造axios实例
 let vueAxios = Axios.create({
   baseURL: apiRoot

@@ -1,15 +1,10 @@
-import Vue from 'vue'
 import Router from 'vue-router'
 import SubRouter from './subRouter'
 
-const pageIndex = () =>
-  import ('@/pages/index.vue')
 const pageAppBar = () =>
   import ('@/pages/appBar.vue')
 
-Vue.use(Router)
-
-export default new Router({
+const mainRouter = new Router({
   mode: 'history',
   routes: [{
     path: '/',
@@ -21,3 +16,14 @@ export default new Router({
     children: SubRouter
   }]
 })
+
+mainRouter.beforeEach((to, from, next) => {
+  if (to.meta.title) {
+    document.title = to.meta.title
+  }
+  next()
+})
+
+mainRouter.afterEach(transition => {})
+
+export default mainRouter

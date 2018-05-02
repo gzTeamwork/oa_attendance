@@ -1,6 +1,8 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
+//  引入vuex
+import 'es6-promise'
 
 //  引入助手函数
 import helper from '@/libs/helper.js'
@@ -18,7 +20,7 @@ import jQuery from 'jquery'
 
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
-Vue.$nprogress = NProgress
+window.$nprogress = NProgress
 
 //  引入cookies
 import VueCookie from 'vue-cookies'
@@ -28,8 +30,6 @@ Vue.use(VueCookie)
 import vueAxios from 'axios'
 Vue.prototype.$http = vueAxios
 
-
-
 //  引入服务器类
 import serverApi from '@/libs/serverApi.js'
 Vue.prototype.$serverApi = serverApi
@@ -37,9 +37,6 @@ Vue.prototype.$serverApi = serverApi
 import weixinApi from '@/libs/weixinApi.js'
 Vue.prototype.$weixinApi = weixinApi
 
-// //  引入eventbus
-// import eventBus from '@/libs/eventBus.js'
-// Vue.prototype.$eventBus = eventBus
 //  引入事件promise
 import vueMethodsPromise from 'vue-methods-promise'
 
@@ -56,33 +53,24 @@ Vue.use(vueMethodsPromise, {
     )
   }
 })
-
-
+import VueRouter from 'vue-router';
+Vue.use(VueRouter)
 import App from './App'
-import router from './router'
+import Router from './router'
+import vueStore from './store'
 Vue.config.productionTip = false
+
 window.EventBus = new Vue()
 
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
-  router,
+  router: Router,
+  store: vueStore,
   components: {
     App
   },
   template: '<App/>'
-})
-
-NProgress.start()
-
-router.beforeEach((to, from, next) => {
-  if (to.meta.title) {
-    document.title = to.meta.title
-  }
-  next()
-})
-router.afterEach(transition => {
-  NProgress.done()
 })
 
 //  引入其他库

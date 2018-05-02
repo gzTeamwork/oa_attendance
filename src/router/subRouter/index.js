@@ -5,7 +5,7 @@ const pageEventCalendar = () =>
   import ('@/pages/components/eventCalendar.vue')
 
 const pageUserRest = () =>
-  import ('@/pages/components/duty.vue')
+  import ('@/pages/components/userDuty.vue')
 
 const subRouter = [{
 
@@ -16,7 +16,7 @@ const subRouter = [{
   meta: {
     title: '每日报餐'
   }
-  
+
 }, {
 
   //  报餐
