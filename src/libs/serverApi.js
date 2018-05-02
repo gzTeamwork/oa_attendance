@@ -1,7 +1,7 @@
+import Vue from 'vue'
 import Axios from 'axios'
 import VueCookie from 'vue-cookies'
 import apiConfig from '@/configs/api.Config.js'
-import Vue from 'vue'
 
 // 接口配置
 const configs = apiConfig
@@ -13,14 +13,18 @@ const configs = apiConfig
 //   agentId: "1000034"
 // };
 
-// 接口地址
-let surl = 'http://oa.emking.cn/inforward/api/'
-// let surl = 'http://admin.localhost.com/inforward/api/'
+// 获取当前使用环境
+const devMode = process.env.NODE_ENV === 'development'
+console.log(devMode)
+
+// 接口地址 - 构建开发与生产api接口
+let remoteRoot = 'http://oa.emking.cn/inforward/api/'
+let localRoot = 'http://admin.localhost.com/inforward/api/'
+const apiRoot = devMode ? localRoot : remoteRoot
 
 //  构造axios实例
-
 let vueAxios = Axios.create({
-  baseURL: surl
+  baseURL: apiRoot
 })
 
 // 添加请求拦截器
@@ -30,6 +34,7 @@ vueAxios.interceptors.request.use(function (config) {
   return config
 }, function (error) {
   // 对请求错误做些什么
+  devMode || alert(error)
   return Promise.reject(error)
 })
 
@@ -40,6 +45,7 @@ vueAxios.interceptors.response.use(function (response) {
   return response
 }, function (error) {
   // 对响应错误做点什么
+  devMode || alert(error)
   return Promise.reject(error)
 })
 
@@ -52,7 +58,7 @@ let buildParams = function (params) {
 //  连接服务器 - 换取appToken
 let getAppToken = function (corpId, corpSecret) {
   vueAxios
-    .get(surl + 'wx_work_connect', {
+    .get(apiRoot + 'wx_work_connect', {
       params: {
         corp_id: corpId || configs.corpId,
         corp_secret: corpSecret || configs.corpSecret
@@ -72,7 +78,7 @@ let getAppToken = function (corpId, corpSecret) {
 //  员工登录交互 - 带token
 let wxWorkLogin = function (token) {
   let accessToken = token || VueCookie.get('corpAccessToken')
-  Axios.get(surl + 'wx_work_login', {
+  Axios.get(apiRoot + 'wx_work_login', {
     params: {
       token: accessToken
     }
@@ -83,7 +89,7 @@ let wxWorkLogin = function (token) {
  * @deprecated 本函数已废弃,转为后台获取
  */
 let getToken = function () {
-  Axios.get(surl + 'get_access_token', {
+  Axios.get(apiRoot + 'get_access_token', {
     params: {}
   }).then(res => {
     if (res.status === 200) {
@@ -113,7 +119,7 @@ let getCurMonthEvents = function (today) {
 }
 //  获取当月休假记录
 let getRestEventsByMonth = function (today) {
-  Axios.get(surl + 'get_restevents_by_month', {
+  Axios.get(apiRoot + 'get_restevents_by_month', {
     params: {
       date: today
     }
@@ -130,7 +136,7 @@ let getRestEventsByMonth = function (today) {
 
 //  获取员工信息
 let getUserInfo = function (userCode) {
-  Axios.get(surl + 'get_user_info', {
+  Axios.get(apiRoot + 'get_user_info', {
     params: {
       user_code: userCode || null
     }
@@ -153,7 +159,7 @@ let getUserInfo = function (userCode) {
 
 //  获取员工信息 - 员工票据
 let getUserInfoByTicket = function (userTicket) {
-  Axios.get(surl + 'get_user_info_by_ticket', {
+  Axios.get(apiRoot + 'get_user_info_by_ticket', {
     params: {
       user_ticket: userTicket || null
     }
@@ -167,7 +173,7 @@ let getUserInfoByTicket = function (userTicket) {
 }
 
 let getUserInfoById = function (userId) {
-  Axios.get(surl + 'get_user_info_by_id', {
+  Axios.get(apiRoot + 'get_user_info_by_id', {
     params: {
       user_id: userId || null
     }
@@ -182,7 +188,7 @@ let getUserInfoById = function (userId) {
 }
 //  获取员工的休假日
 let getRestDayByUser = function (userid) {
-  Axios.get(surl + 'get_rest_day_by_user', {
+  Axios.get(apiRoot + 'get_rest_day_by_user', {
     params: {
       user_id: userid || null
     }
@@ -216,7 +222,7 @@ let getAllUser = function () {
 
 //  提交员工排班数据
 let setuserAttendance = function (oldRestDay, restDay, userId, userName) {
-  Axios.get(surl + 'set_user_attendance', {
+  Axios.get(apiRoot + 'set_user_attendance', {
     params: {
       old_day: oldRestDay || null,
       rest_day: restDay,
@@ -245,12 +251,20 @@ let getUserWeekMeal = function (useid) {
 
   weekDate.setDate(todayDate.getDay() - 7 + todayDate.getDate())
 
+  let meats = ['蜜汁叉烧', '烧排骨', '酱油鸡', '蒸鱼']
+  let vegetables = ['菠菜', '生菜', '娃娃菜']
+  let soups = ['鸡汤', '鸭汤', '鱼汤', '骨头汤', '清保凉']
+
   for (let i = 1; i < 7 + 1; i++) {
     weekDate.setDate(weekDate.getDate() + 1)
     let event = {
       date: weekDate.Format('yyyy-MM-dd'),
       day: weekDate.getDay(),
-      menu: 123,
+      menu: {
+        'meat': meats[Math.round(Math.random() * meats.length)],
+        'vegetable': vegetables[Math.round(Math.random() * vegetables.length)],
+        'soup': soups[Math.round(Math.random() * soups.length)]
+      },
       isCheck: false,
       isToday: todayDate.Format('yyyy-MM-dd') === weekDate.Format('yyyy-MM-dd')
     }
@@ -262,14 +276,14 @@ let getUserWeekMeal = function (useid) {
 }
 
 //  提交员工报餐数据
-let attendUserMeal = function (userid, mealsData) {
-  let result = []
+let attendUserMeal = function (userid, mealDate, mealData) {
   let timeStamp = new Date()
   window.EventBus.$emit('attendUserMealsRes', timeStamp + '提交了数据')
   vueAxios.post('attendUserMeal', {
       params: {
         user_id: userid || null,
-        meals_data: mealsData || []
+        meal_date: mealDate || null,
+        meal_data: mealData || []
       }
     })
     .then(response => {
@@ -315,7 +329,7 @@ const serverApi = {
   getAppToken: getAppToken,
 
   login: wxWorkLogin,
-  serverUrl: surl,
+  serverUrl: apiRoot,
   getToken: getToken,
   //  获取员工信息
   getUserInfo: getUserInfo,

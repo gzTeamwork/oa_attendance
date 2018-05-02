@@ -8,6 +8,7 @@ const pageUserRest = () =>
   import ('@/pages/components/duty.vue')
 
 const subRouter = [{
+
   //  报餐
   path: 'dailyMeal',
   name: 'daily meal',
@@ -15,7 +16,9 @@ const subRouter = [{
   meta: {
     title: '每日报餐'
   }
+  
 }, {
+
   //  报餐
   path: 'schedule',
   name: 'event calendar',
@@ -23,6 +26,7 @@ const subRouter = [{
   meta: {
     title: '排班日历'
   }
+
 }, {
 
   //  调休
@@ -32,6 +36,7 @@ const subRouter = [{
   meta: {
     title: '员工调休'
   }
+
 }]
 
 export default subRouter

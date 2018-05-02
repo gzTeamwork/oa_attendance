@@ -37,23 +37,9 @@
                 :disabled="item.day==0" class="demo-float-button" @click="handleCheck(index)" />
             </div>
             <mu-flexbox justify="space-between" align="center" style="padding-top:0.6em;text-align:center">
-              <mu-flexbox-item>
-                <img :width="32" :src="imgs.meatPng"/>
-              <div>
-                蜜汁叉烧
-              </div>
-              </mu-flexbox-item>
-              <mu-flexbox-item>
-                <img :width="32" :src="imgs.vegetablePng"/>
-             <div>
-                菠菜
-             </div>
-              </mu-flexbox-item>
-              <mu-flexbox-item>
-                <img :width="32" :src="imgs.soupPng"/>
-             <div>
-                骨头汤
-             </div>
+              <mu-flexbox-item v-for="(food,foodIndex) in item.menu" :key="foodIndex">
+                <img  :width="32" :src="imgs['fodeIndex']" alt="" />
+                <div>{{food}}</div>
               </mu-flexbox-item>
             </mu-flexbox>
           </mu-list-item>          
@@ -136,11 +122,16 @@ export default {
 
     //  点餐按钮事件
     handleCheck: function(index) {
-      this.weekEvents[index].isCheck = !this.weekEvents[index].isCheck;
-      this.toast.msg =
-        this.weekEvents[index].date +
-        (this.weekEvents[index].isCheck ? "我要吃饭" : "我还是不吃了");
-      this.$serverApi.attendUserMeal();
+      let vm = this;
+      vm.weekEvents[index].isCheck = !vm.weekEvents[index].isCheck;
+      vm.toast.msg =
+        vm.weekEvents[index].date +
+        (vm.weekEvents[index].isCheck ? "我要吃饭" : "我还是不吃了");
+      vm.$serverApi.attendUserMeal(
+        vm.userInfo["userid"],
+        vm.weekEvents[index].date,
+        vm.weekEvents[index]
+      );
     },
 
     //  提交报餐
@@ -161,19 +152,7 @@ export default {
     }
   },
   watch: {
-    tomorrowEvents: function(v, ov) {
-      // console.log(v);
-      // let duty;
-      // let n = 0;
-      // for (o in v.onDuty) {
-      //   if (typeof o == "object") {
-      //     n++;
-      //   }
-      // }
-      // // let counter = this.$helper.getObjLen(duty);
-      // // console.log("共有" + counter + "个人报餐");
-      // this.tomorrowMeals = n;
-    }
+    tomorrowEvents: function(v, ov) {}
   }
 };
 </script>
