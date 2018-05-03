@@ -1,5 +1,3 @@
-/* * @Author: Zicokuo * @Date: 2018-04-06 10:51:22 * @Last Modified by: Zicokuo * @Last Modified time: 2018-04-07 22:25:43
-*/
 <template>
   <div id='pageDuty'>
     <br>
@@ -19,22 +17,28 @@
       <mu-card-title :title="userInfo.name || '企业微信昵称'" :subTitle="userInfo.english_name ||''">
       </mu-card-title>
       <mu-badge :content="userInfo.position||'员工'" primary slot="after" />
-      <mu-card-title :title="'本月排休 '+ workerRestDays.length +' 天 '" subTitle="Rest Days" />
-      <mu-paper v-for="(item,index) in workerRestDays" :key="index" style="margin-top:0.5em">
-
-        <div>第{{index+1}}天
-          <p v-if="isabledDay(item.date)">
-            此休息日已经过期,无法修改
-          </p>
-        </div>
+      <mu-card-title :title="'本月排休可 '+ workerRestDays.length +' 天 '" subTitle="Rest Days" />
+      <mu-list>
+        <mu-list-item v-for="(item,index) in workerRestDays" :key="index">
+        <mu-avatar backgroundColor="blue300" slot="left">{{index+1}}</mu-avatar>
+        <div slot="title">
+          <!-- <span>第 {{index + 1}} 天</span> -->
         <mu-date-picker hintText="选择排休日期" :firstDayOfWeek="0" :minDate="minDate" :maxDate="maxDate" :disabled="isabledDay(item.date)"
           :shouldDisableDate="getDisableDate" @change="datePickerChange($event,index)" :value="item.date" />
-      </mu-paper>
+          <div v-if="isabledDay(item.date)">
+            此休息日已经过期,无法修改
+          </div>
+          <mu-float-button icon="close" mini slot="after" :disabled="isabledDay(item.date)"/>
+        </div>
+        </mu-list-item>
+      </mu-list>
     </div>
   </div>
 </template>
 
 <script>
+import { mapMutations } from "vuex";
+
 import museToast from "@/components/museToast.vue";
 import defaultAvatar from "@/assets/avatar.png";
 const vueDate = new Date();
@@ -77,37 +81,38 @@ export default {
   created: function() {
     let vm = this;
 
-    EventBus.$on("needAuth", data => {
-      console.log("捕捉到needAuth" + data);
-      vm.needLogin = data;
-    });
+    //  获取用户信息
+    this.userInfo = this.$store.getters.getUserInfo;
+    //  获取登录状态
+    this.needLogin = this.$store.getters.needLogin;
+    //  获取用户调休日期
+    this.workerRestDays = this.$store.getters.getUserRestDay;
+    // //  接收UserInfo
+    // EventBus.$on("userInfo", user => {
+    //   console.log("捕捉用户信息成功");
+    //   //  缓存userInfo
+    //   vm.$cookies.set("userInfo", user, "1d");
+    //   //  拿到用户信息之后，缓存用户信息
 
-    //  接收UserInfo
-    EventBus.$on("userInfo", user => {
-      console.log("捕捉用户信息成功");
-      //  缓存userInfo
-      vm.$cookies.set("userInfo", user, "1d");
-      //  拿到用户信息之后，缓存用户信息
+    //   vm.userInfo = user;
+    //   vm.needLogin = false;
+    //   // 有了userid,就获取对应的休假日
+    //   vm.$serverApi.getRestDayByUser(user.userid);
+    // });
 
-      vm.userInfo = user;
-      vm.needLogin = false;
-      // 有了userid,就获取对应的休假日
-      vm.$serverApi.getRestDayByUser(user.userid);
-    });
-
-    //  接收当前用户休假日
-    EventBus.$on("curUserRestDay", days => {
-      console.log("捕捉当前用户休假日数据");
-      // vm.workerRestDays = vm.$helper.getO2A(days);
-      if (days.length < 2) {
-        for (let i = days.length; i < 2; i++) {
-          days.push({
-            date: null
-          });
-        }
-      }
-      vm.workerRestDays = days;
-    });
+    // //  接收当前用户休假日
+    // EventBus.$on("curUserRestDay", days => {
+    //   console.log("捕捉当前用户休假日数据");
+    //   // vm.workerRestDays = vm.$helper.getO2A(days);
+    //   if (days.length < 2) {
+    //     for (let i = days.length; i < 2; i++) {
+    //       days.push({
+    //         date: null
+    //       });
+    //     }
+    //   }
+    //   vm.workerRestDays = days;
+    // });
 
     // //  接收AppToken
     // EventBus.$on("appToken", token => {
@@ -123,6 +128,33 @@ export default {
     date.setDate(-1);
     date.setMonth(date.getMonth() + 1);
     vm.maxDate = new Date(date).Format("yyyy-MM-dd");
+  },
+  mounted: function() {},
+  watch: {
+    userInfo: function(v, ov) {
+      console.log("userInfo改变了");
+      if (v.userid) {
+        // this.userInfo = v;
+        this.$serverApi.getRestDayByUser(v.userid);
+      }
+    },
+    handlerUserRestDays: function(v, ov) {
+      console.log("userRestDays改变了");
+
+      if (v.length < 2) {
+        for (let i = v.length; i < 2; i++) {
+          v.push({
+            date: null
+          });
+        }
+      }
+      this.workerRestDays = v;
+    }
+  },
+  computed: {
+    handlerUserRestDays() {
+      return this.$store.getters.getUserRestDay;
+    }
   },
   methods: {
     getToday: function() {

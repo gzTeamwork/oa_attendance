@@ -1,16 +1,18 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+
+import TestUnit from './components/testUnit/'
+import LoginUser from './components/loginUser.js'
+import UserDuty from './components/userDuty.js'
 Vue.use(Vuex)
 
-let LoginUser = () =>
-  import ('./loginUser')
 const Store = new Vuex.Store({
   modules: {
-    loginUser: LoginUser
-  },
-  state: {
-    test: '测试一下'
+    testUnit: TestUnit,
+    loginUser: LoginUser,
+    userDuty: UserDuty
   }
 })
+console.log(Store)
 
 export default Store

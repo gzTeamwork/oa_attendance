@@ -53,6 +53,7 @@ Vue.use(vueMethodsPromise, {
     )
   }
 })
+
 import VueRouter from 'vue-router';
 Vue.use(VueRouter)
 import App from './App'
@@ -61,6 +62,8 @@ import vueStore from './store'
 Vue.config.productionTip = false
 
 window.EventBus = new Vue()
+window.Store = vueStore
+window.Cookies = VueCookie
 
 /* eslint-disable no-new */
 new Vue({

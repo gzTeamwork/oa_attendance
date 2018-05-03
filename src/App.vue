@@ -1,35 +1,36 @@
 <template>
   <div id="app">
     <!-- 全面采用路由模式加载页面 -->
-      <div>{{test}}</div>
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
+import { getUserAuth } from "@/libs/weixinApi.js";
 export default {
   name: "App",
   data() {
     return {
-      test: null
+      test: null,
+      userInfo: null
     };
   },
-  beforeCreate: function() {
-    let vm = this;
-    //  向服务器连接拿appToken
-    // let appToken = vm.$serverApi.getAppToken();
-    // EventBus.$emit("appToken", appToken);
-  },
   created: function() {
-    //  创建则需要授权
-    this.test = this.$store.state;
     let vm = this;
-    vm.$serverApi.getUserInfo("guozihao");
+    //  访问则需要登录
+    let userInfo = vm.$store.getters.getUserInfo;
+
+    this.userInfo = userInfo;
+
+    if (userInfo || userInfo === null) {
+      //  没有用户信息,则跳转授权
+      // vm.$serverApi.getUserInfoById("guozihao");
+    } else {
+      vm.$store.commit("changeUserInfo", userInfo);
+    }
   },
   mounted: function() {
     let vm = this;
-    window.EventBus.$on("userInfo", data => {
-      vm.$store.commit("changeUserInfo", data);
-    });
   }
 };
 </script>

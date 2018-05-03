@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Axios from 'axios'
 import VueCookie from 'vue-cookies'
 import apiConfig from '@/configs/api.Config.js'
-
+import Store from '@/store'
 // 接口配置
 const configs = apiConfig
 
@@ -26,11 +26,11 @@ apiRoot = remoteRoot
 let vueAxios = Axios.create({
   baseURL: apiRoot
 })
-
+Store.dispatch('testCommit', '测试')
 // 添加请求拦截器
 vueAxios.interceptors.request.use(function (config) {
   // 在发送请求之前做些什么
-  Vue.$nprogress.start()
+  window.$nprogress.start()
   return config
 }, function (error) {
   // 对请求错误做些什么
@@ -41,7 +41,7 @@ vueAxios.interceptors.request.use(function (config) {
 // 添加响应拦截器
 vueAxios.interceptors.response.use(function (response) {
   // 对响应数据做点什么
-  Vue.$nprogress.done()
+  window.$nprogress.done()
   return response
 }, function (error) {
   // 对响应错误做点什么
@@ -109,7 +109,8 @@ let getCurMonthEvents = function (today) {
     })
     .then(res => {
       if (res.status === 200) {
-        window.EventBus.$emit('curMonthEvents', res.data)
+        // window.EventBus.$emit('curMonthEvents', res.data)
+        window.Store.commit('changeMonthEvents', res.data)
         console.log('通过服务器获取当月排班数据')
         return res.data
       } else {
@@ -145,7 +146,8 @@ let getUserInfo = function (userCode) {
       console.log('成功获取员工信息')
       console.log(res.data)
       //  抛出员工信息
-      window.EventBus.$emit('userInfo', res.data)
+      // window.EventBus.$emit('userInfo', res.data)
+      // Store.dispatch('changeUserInfo', res.data)
       //  缓存员工票据
       VueCookie.set('userTicket', res.data.user_ticket, 7200)
       return res.data
@@ -166,7 +168,8 @@ let getUserInfoByTicket = function (userTicket) {
   }).then(res => {
     if (res.status === 200) {
       console.log('成功获取员工票据')
-      window.EventBus.$emit('userInfo', res.data)
+      // window.EventBus.$emit('userInfo', res.data)
+      window.Store.commit('changeUserInfo', res.data)
       return res.data
     }
   })
@@ -180,8 +183,10 @@ let getUserInfoById = function (userId) {
   }).then(res => {
     if (res.status === 200) {
       console.log('成功获取员工信息')
-      window.EventBus.$emit('userInfo', res.data)
-      window.EventBus.$emit('needAuth', false)
+      // Store.commit('changeUserInfo', res.data)
+      window.Store.commit('changeUserInfo', res.data)
+      // window.EventBus.$emit('userInfo', res.data)
+      // window.EventBus.$emit('needAuth', false)
       return res.data
     }
   })
@@ -195,7 +200,8 @@ let getRestDayByUser = function (userid) {
   }).then(res => {
     if (res.status === 200) {
       console.log('成功获取员工的休假日')
-      window.EventBus.$emit('curUserRestDay', res.data)
+      window.Store.commit('changeUserRestDay', res.data)
+      // window.EventBus.$emit('curUserRestDay', res.data)
       return res.data
     } else {
       console.log(res.errmsg)
@@ -280,18 +286,17 @@ let attendUserMeal = function (userid, mealDate, mealData) {
   let timeStamp = new Date()
   window.EventBus.$emit('attendUserMealsRes', timeStamp + '提交了数据')
   vueAxios.post('attendUserMeal', {
-      params: {
-        user_id: userid || null,
-        meal_date: mealDate || null,
-        meal_data: mealData || []
-      }
-    })
-    .then(response => {
-      if (response.status === 200) {
-        //  指派数据UserMeals
-        window.EventBus.$emit('attendUserMeals', response.data)
-      }
-    })
+    params: {
+      user_id: userid || null,
+      meal_date: mealDate || null,
+      meal_data: mealData || []
+    }
+  }).then(response => {
+    if (response.status === 200) {
+      //  指派数据UserMeals
+      window.EventBus.$emit('attendUserMeals', response.data)
+    }
+  })
 }
 //  获取明天员工报餐统计
 let getTomorrowDailyMeals = function () {

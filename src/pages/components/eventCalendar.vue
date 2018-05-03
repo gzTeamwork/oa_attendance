@@ -92,17 +92,17 @@ export default {
     // });
 
     //  接收当月排班数据
-    window.EventBus.$on("curMonthEvents", events => {
-      let newEvents = [];
-      console.log("接收当月排班数据");
-      events.map((e, i) => {
-        let event = events[i];
-        event.date = new Date(e.date).Format("yyyy/MM/dd");
-        event.title = "日历事件";
-        newEvents.push(event);
-      });
-      vm.calenderEvents = newEvents;
-    });
+    // window.EventBus.$on("curMonthEvents", events => {
+    //   let newEvents = [];
+    //   console.log("接收当月排班数据");
+    //   events.map((e, i) => {
+    //     let event = events[i];
+    //     event.date = new Date(e.date).Format("yyyy/MM/dd");
+    //     event.title = "日历事件";
+    //     newEvents.push(event);
+    //   });
+    //   vm.calenderEvents = newEvents;
+    // });
   },
   activated: function() {
     let vm = this;
@@ -114,6 +114,18 @@ export default {
     setTimeout(() => {
       vm.$EventCalendar.toDate(today);
     }, 1000);
+  },
+  computed: {
+    handlerMonthEvents() {
+      this.calenderEvents = this.$store.getters.monthEvents;
+    }
+  },
+  watch: {
+    handlerMonthEvents: function(v, ov) {
+      console.log(v);
+
+      this.calenderEvents = v;
+    }
   },
   methods: {
     //  日期切换事件
