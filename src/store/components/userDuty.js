@@ -4,7 +4,7 @@ const state = {
 }
 
 const getters = {
-  monthEvents: state => {
+  getMonthEvents: state => {
     return state.curMonthEvents
   }
 }

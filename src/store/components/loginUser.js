@@ -16,7 +16,8 @@ const getters = {
       state.userInfo = cookieUser
       state.needAuth = false
     }
-    return cookieUser || state.userInfo
+    let user = cookieUser || state.userInfo
+    return user
   },
   needLogin: state => {
     return state.needAuth

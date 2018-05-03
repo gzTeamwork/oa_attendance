@@ -8,6 +8,15 @@ const pageUserRest = () =>
   import ('@/pages/components/userDuty.vue')
 
 const subRouter = [{
+  //  默认路由
+  path: '/',
+  name: 'user rest',
+  component: pageUserRest,
+  meta: {
+    title: '员工调休'
+  }
+
+}, {
 
   //  报餐
   path: 'dailyMeal',
@@ -31,7 +40,7 @@ const subRouter = [{
 
   //  调休
   path: 'userRest',
-  name: 'user rest',
+  name: 'user rest',
   component: pageUserRest,
   meta: {
     title: '员工调休'

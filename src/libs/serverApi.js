@@ -21,7 +21,7 @@ console.log(devMode)
 let remoteRoot = 'http://oa.emking.cn/inforward/api/'
 let localRoot = 'http://admin.localhost.com/inforward/api/'
 let apiRoot = devMode ? localRoot : remoteRoot
-apiRoot = remoteRoot
+// apiRoot = remoteRoot
 //  构造axios实例
 let vueAxios = Axios.create({
   baseURL: apiRoot
@@ -34,7 +34,8 @@ vueAxios.interceptors.request.use(function (config) {
   return config
 }, function (error) {
   // 对请求错误做些什么
-  devMode || alert(error)
+  devMode && console.log(error)
+  window.$nprogress.done()
   return Promise.reject(error)
 })
 
@@ -45,7 +46,8 @@ vueAxios.interceptors.response.use(function (response) {
   return response
 }, function (error) {
   // 对响应错误做点什么
-  devMode || alert(error)
+  devMode && console.log(error)
+  window.$nprogress.done()
   return Promise.reject(error)
 })
 

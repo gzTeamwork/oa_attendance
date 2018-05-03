@@ -104,27 +104,31 @@ export default {
     //   vm.calenderEvents = newEvents;
     // });
   },
-  activated: function() {
-    let vm = this;
-    vm.$serverApi.getCurMonthEvents(today);
-    vm.msg = "数据更新于" + dateNow.Format("yyyy-M-d h:m:s");
-  },
+  // activated: function() {
+  //   let vm = this;
+  //   vm.$serverApi.getCurMonthEvents(today);
+  //   vm.msg = "数据更新于" + dateNow.Format("yyyy-M-d h:m:s");
+  // },
   mounted: function() {
     let vm = this;
-    setTimeout(() => {
-      vm.$EventCalendar.toDate(today);
-    }, 1000);
+    // setTimeout(() => {
+    //   vm.$EventCalendar.toDate(today);
+    // }, 1000);
+  },
+  watch: {
+    handlerMonthEvents: function(v) {
+      let vm = this;
+      console.log(v);
+      // this.$set(this.calenderEvents, v);
+      vm.calenderEvents = v;
+      setTimeout(() => {
+        vm.$EventCalendar.toDate(today);
+      }, 1000);
+    }
   },
   computed: {
     handlerMonthEvents() {
-      this.calenderEvents = this.$store.getters.monthEvents;
-    }
-  },
-  watch: {
-    handlerMonthEvents: function(v, ov) {
-      console.log(v);
-
-      this.calenderEvents = v;
+      return this.$store.getters.getMonthEvents;
     }
   },
   methods: {
@@ -158,8 +162,7 @@ export default {
       let dateNow = new Date();
       vm.msg = "数据更新于" + dateNow.Format("yyyy-M-d h:m:s");
     }
-  },
-  watch: {}
+  }
 };
 </script>
 

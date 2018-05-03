@@ -86,7 +86,7 @@ export default {
     //  获取登录状态
     this.needLogin = this.$store.getters.needLogin;
     //  获取用户调休日期
-    this.workerRestDays = this.$store.getters.getUserRestDay;
+    // this.workerRestDays = this.$store.getters.getUserRestDay;
     // //  接收UserInfo
     // EventBus.$on("userInfo", user => {
     //   console.log("捕捉用户信息成功");
@@ -135,7 +135,9 @@ export default {
       console.log("userInfo改变了");
       if (v.userid) {
         // this.userInfo = v;
-        this.$serverApi.getRestDayByUser(v.userid);
+        setTimeout(function() {
+          this.$serverApi.getRestDayByUser(v.userid);
+        }, 1000);
       }
     },
     handlerUserRestDays: function(v, ov) {
@@ -153,7 +155,7 @@ export default {
   },
   computed: {
     handlerUserRestDays() {
-      return this.$store.getters.getUserRestDay;
+      return this.$store.state.userDuty.curMonthEvents;
     }
   },
   methods: {

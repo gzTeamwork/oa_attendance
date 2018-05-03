@@ -16,7 +16,7 @@ export default {
     };
   },
   created: function() {
-    let vm = this;
+    let vm = this; 
     //  访问则需要登录
     let userInfo = vm.$store.getters.getUserInfo;
 
