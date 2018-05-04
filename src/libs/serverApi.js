@@ -179,6 +179,8 @@ let getUserInfoByTicket = function (userTicket) {
 }
 
 let getUserInfoById = function (userId) {
+  console.log('通过uiserId获取用户信息')
+
   Axios.get(apiRoot + 'get_user_info_by_id', {
     params: {
       user_id: userId || null
@@ -252,6 +254,9 @@ let setuserAttendance = function (oldRestDay, restDay, userId, userName) {
 }
 //  获取员工近日报餐数据
 let getUserWeekMeal = function (useid) {
+
+  vueAxios.get('get_user_week_meal')
+
   let datas = []
   //  产生数据
   let todayDate = new Date()
@@ -280,7 +285,7 @@ let getUserWeekMeal = function (useid) {
     datas.push(event)
   }
 
-  window.EventBus.$emit('getUserWeekMeal', datas)
+  window.Store.commit('changUserWeekMeals', datas)
   return datas
 }
 
@@ -301,26 +306,44 @@ let attendUserMeal = function (userid, mealDate, mealData) {
     }
   })
 }
+
+//  提交员工一周报餐
+let setUserWeekMeals = function (weekEvents, userid) {
+  vueAxios.post('set_user_week_meals', {
+    params: {
+      events: weekEvents,
+      user_id: userid
+    }
+  }).then(response => {
+    if (response.stauts === 200) {}
+  })
+}
+
 //  获取明天员工报餐统计
 let getTomorrowDailyMeals = function () {
-  let result = [{
-    userid: 'GuoZiHao',
-    name: '郭子豪',
-    avatar: '123',
-    needMeal: true
-  }, {
-    userid: 'GuoZiHao',
-    name: '郭子豪',
-    avatar: '123',
-    needMeal: false
-  }]
-  window.EventBus.$emit('getTomorrowDailyMeals', result)
-  return result
-  vueAxios.get('get_tomorrow_daily_meals').then(response => {
-    if (response.stauts === 200) {
-      window.EventBus.$emit('getTomorrowDailyMeals', response.data)
+  vueAxios.get('get_tomorrow_daily_meals').then(res => {
+    if (res.status === 200) {
+      window.Store.commit('changeTomorrowDailyMeals', res.data)
     }
   })
+  // let result = [{
+  //   userid: 'GuoZiHao',
+  //   name: '郭子豪',
+  //   avatar: '123',
+  //   needMeal: true
+  // }, {
+  //   userid: 'GuoZiHao',
+  //   name: '郭子豪',
+  //   avatar: '123',
+  //   needMeal: false
+  // }]
+  // window.EventBus.$emit('getTomorrowDailyMeals', result)
+  // return result
+  // vueAxios.get('get_tomorrow_daily_meals').then(response => {
+  //   if (response.stauts === 200) {
+  //     window.EventBus.$emit('getTomorrowDailyMeals', response.data)
+  //   }
+  // })
 }
 
 /**
@@ -360,6 +383,8 @@ const serverApi = {
   //  提交员工报餐数据
   attendUserMeal: attendUserMeal,
   //  获取明天报餐数据
-  getTomorrowDailyMeals: getTomorrowDailyMeals
+  getTomorrowDailyMeals: getTomorrowDailyMeals,
+  //  提交一周内报餐
+  setUserWeekMeals: setUserWeekMeals
 }
 export default serverApi

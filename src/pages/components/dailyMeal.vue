@@ -33,7 +33,7 @@
               <mu-badge content="今天" v-if="item.date == today" secondary slot="after"/>
             </div>                        
             <div slot="right">
-              <mu-float-button slot="right" :icon="item.isCheck?'check':'add'" :backgroundColor="item.isCheck?'redA400':'brown100'" mini
+              <mu-float-button slot="right" :icon="item.isCheck?'check':'add'" :backgroundColor="item.isCheck?'green300':'brown100'" mini
                 :disabled="item.day==0" class="demo-float-button" @click="handleCheck(index)" />
             </div>
             <mu-flexbox justify="space-between" align="center" style="padding-top:0.6em;text-align:center">
@@ -88,29 +88,13 @@ export default {
   },
   created: function() {
     let vm = this;
-    vm.weekEvents = vm.$serverApi.getUserWeekMeal("guozihao");
+    vm.userInfo = vm.$store.getters.getUserInfo;
+    vm.weekEvents = vm.$serverApi.getUserWeekMeal(vm.userInfo.userid);
     vm.$serverApi.getTomorrowDailyMeals();
   },
   mounted: function() {
     let vm = this;
-    vm.needLogin = false;
-
-    //  接收用户最近报餐数据
-    window.EventBus.$on("getUserWeekMeal", datas => {
-      console.log("接收近期当前用户报餐数据");
-      vm.weekEvents = datas;
-    });
-
-    //  接收用户明天报餐数据
-    window.EventBus.$on("getTomorrowDailyMeals", datas => {
-      console.log("接收明日用户报餐数据");
-      vm.tomorrowEvents = datas;
-    });
-    //  接受用户数据
-    window.EventBus.$on("userInfo", datas => {
-      console.log("接收用户数据");
-      vm.userInfo = datas;
-    });
+    // vm.needLogin = false;
   },
   methods: {
     //  获取用户信息
@@ -127,17 +111,17 @@ export default {
       vm.toast.msg =
         vm.weekEvents[index].date +
         (vm.weekEvents[index].isCheck ? "我要吃饭" : "我还是不吃了");
-      vm.$serverApi.attendUserMeal(
-        vm.userInfo["userid"],
-        vm.weekEvents[index].date,
-        vm.weekEvents[index]
-      );
+      // vm.$serverApi.attendUserMeal(
+      //   vm.userInfo["userid"],
+      //   vm.weekEvents[index].date,
+      //   vm.weekEvents[index]
+      // );
     },
 
     //  提交报餐
     handleUserMealSubmit: function() {
       let vm = this;
-      vm.$serverApi.attendUserMeal();
+      vm.$serverApi.setUserWeekMeals(vm.weekEvents, vm.userInfo.userid);
     },
 
     //  打开明日列表

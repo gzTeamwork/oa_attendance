@@ -1,7 +1,7 @@
 <template>
   <div id="appBar">
      <router-view></router-view>
-      <mu-bottom-nav :value="curAppBar" @change="handleChange">
+      <mu-bottom-nav shift  :value="curAppBar" @change="handleChange">
       <mu-bottom-nav-item v-for="item in appBars" :key="item.path" :value="item.path" 
       :title="item.title" :icon="item.icon" :to="item.path"/>
     </mu-bottom-nav>    
@@ -24,7 +24,12 @@ export default {
   },
   methods: {
     handleChange: function(val) {
-      this.curAppBar = val;
+      if (this.userInfo === null) {
+        alert("请先授权登录");
+        return false;
+      } else {
+        this.curAppBar = val;
+      }
     }
   },
   created: function() {
@@ -39,14 +44,14 @@ export default {
     //  开发专用 - 模拟授权登陆
     let userId = params.user_id || null;
     let devMode = process.env.NODE_ENV === "development";
-    if (userId !== null && devMode) {
-      vm.$serverApi.getUserInfoById(userId);
+    if (devMode) {
+      vm.$serverApi.getUserInfoById("guozihao");
     } else {
       //  2.用户验证状态码
       if (userTicket == null) {
         if (userCode == null) {
           // 没票,也没有code,跳转授权
-          // vm.$weixinApi.getUserAuth();
+          vm.$weixinApi.getUserAuth();
           window.Store.commit("changeNeedAuth", true);
           // EventBus.$emit("needAuth", true);
         } else {
