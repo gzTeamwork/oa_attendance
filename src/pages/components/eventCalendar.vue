@@ -111,9 +111,9 @@ export default {
   // },
   mounted: function() {
     let vm = this;
-    // setTimeout(() => {
-    //   vm.$EventCalendar.toDate(today);
-    // }, 1000);
+    setTimeout(() => {
+      vm.$EventCalendar.toDate(today);
+    }, 1000);
   },
   watch: {
     handlerMonthEvents: function(v) {
@@ -121,9 +121,9 @@ export default {
       console.log(v);
       // this.$set(this.calenderEvents, v);
       vm.calenderEvents = v;
-      setTimeout(() => {
-        vm.$EventCalendar.toDate(today);
-      }, 1000);
+      // setTimeout(() => {
+      //   vm.$EventCalendar.toDate(today);
+      // }, 1000);
     }
   },
   computed: {
@@ -141,6 +141,12 @@ export default {
     //  月份切换事件
     handleMonthChanged: function(dateEvent) {
       console.log(dateEvent);
+      let year = dateEvent.substring(0, 4);
+      let month = dateEvent.substring(5, 7);
+      let curMonthDate = year + "-" + month + "-01";
+      console.log(curMonthDate);
+
+      this.$serverApi.getCurMonthEvents(curMonthDate);
       return false;
     },
     handleEventClick: function(event) {

@@ -21,7 +21,7 @@ console.log(devMode)
 let remoteRoot = 'http://oa.emking.cn/inforward/api/'
 let localRoot = 'http://admin.localhost.com/inforward/api/'
 let apiRoot = devMode ? localRoot : remoteRoot
-// apiRoot = remoteRoot
+apiRoot = remoteRoot
 //  构造axios实例
 let vueAxios = Axios.create({
   baseURL: apiRoot
@@ -106,17 +106,17 @@ let getCurMonthEvents = function (today) {
   vueAxios
     .get('get_month_events', {
       params: {
-        date: new Date(today).Format('yyyy-M-d')
+        date: new Date(today).Format('yyyy-MM-dd')
       }
     })
     .then(res => {
       if (res.status === 200) {
         // window.EventBus.$emit('curMonthEvents', res.data)
         window.Store.commit('changeMonthEvents', res.data)
-        console.log('通过服务器获取当月排班数据')
+        console.log('通过服务器获取' + new Date(today).Format('M') + '月排班数据')
         return res.data
       } else {
-        console.error('获取当月排班数据失败')
+        console.error('获取' + new Date(today).Format('M') + '月排班数据失败')
       }
     })
 }
@@ -152,9 +152,10 @@ let getUserInfo = function (userCode) {
       // Store.dispatch('changeUserInfo', res.data)
       //  缓存员工票据
       VueCookie.set('userTicket', res.data.user_ticket, 7200)
+      window.Store.commit('changeUserTicket', res.data.user_ticket)
+      window.Store.commit('changeUserInfo', res.data)
       return res.data
     } else {
-      window.EventBus.$emit('toastMsg', '员工授权失败')
       console.log(res.errmsg)
       return false
     }
@@ -186,7 +187,7 @@ let getUserInfoById = function (userId) {
     if (res.status === 200) {
       console.log('成功获取员工信息')
       // Store.commit('changeUserInfo', res.data)
-      window.Store.commit('changeUserInfo', res.data)
+      window.Store.commit('changeUserInfo', res.data[0])
       // window.EventBus.$emit('userInfo', res.data)
       // window.EventBus.$emit('needAuth', false)
       return res.data

@@ -37,8 +37,6 @@
 </template>
 
 <script>
-import { mapMutations } from "vuex";
-
 import museToast from "@/components/museToast.vue";
 import defaultAvatar from "@/assets/avatar.png";
 const vueDate = new Date();
@@ -75,9 +73,6 @@ export default {
   components: {
     "muse-toast": museToast
   },
-  beforeCreate: function() {
-    let vm = this;
-  },
   created: function() {
     let vm = this;
 
@@ -87,6 +82,7 @@ export default {
     this.needLogin = this.$store.getters.needLogin;
     //  获取用户调休日期
     // this.workerRestDays = this.$store.getters.getUserRestDay;
+
     // //  接收UserInfo
     // EventBus.$on("userInfo", user => {
     //   console.log("捕捉用户信息成功");
@@ -135,9 +131,12 @@ export default {
       console.log("userInfo改变了");
       if (v.userid) {
         // this.userInfo = v;
+        console.log(v);
+        let vm = this;
+        this.$serverApi.getRestDayByUser(v.userid);
         setTimeout(function() {
-          this.$serverApi.getRestDayByUser(v.userid);
-        }, 1000);
+          vm.workerRestDays = window.Store.getters.getUserRestDay;
+        }, 500);
       }
     },
     handlerUserRestDays: function(v, ov) {

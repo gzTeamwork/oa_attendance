@@ -7,7 +7,7 @@ import 'es6-promise'
 //  引入助手函数
 import helper from '@/libs/helper.js'
 Vue.prototype.$helper = helper
-
+window.Helper = helper
 // 引入 muse-ui
 import MuseUI from 'muse-ui'
 import 'muse-ui/dist/muse-ui.css'

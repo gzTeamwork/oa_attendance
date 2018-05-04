@@ -6,7 +6,6 @@
 </template>
 
 <script>
-import { getUserAuth } from "@/libs/weixinApi.js";
 export default {
   name: "App",
   data() {
@@ -16,7 +15,7 @@ export default {
     };
   },
   created: function() {
-    let vm = this; 
+    let vm = this;
     //  访问则需要登录
     let userInfo = vm.$store.getters.getUserInfo;
 
@@ -24,6 +23,11 @@ export default {
 
     if (userInfo || userInfo === null) {
       //  没有用户信息,则跳转授权
+      let userTicket = window.Cookies.get("userTicket");
+      if (userTicket !== null) {
+        vm.$serverApi.getUserInfoByTicket(userTicket);
+      } else {
+      }
       // vm.$serverApi.getUserInfoById("guozihao");
     } else {
       vm.$store.commit("changeUserInfo", userInfo);

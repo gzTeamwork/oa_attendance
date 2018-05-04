@@ -24,26 +24,24 @@ let getAccessToken = function (corpid, corpsecret) {
     return result
   }
 
-  axios
-    .post(url, {
-      params: {
-        corpid: corpid || configs.corpId,
-        corpsecret: corpsecret || configs.corpSecret
-      }
-    })
-    .then(res => {
-      if (res.status === 200 && res.data.errcode === 0) {
-        console.log('成功获取企业微信应用AccessToken')
-        VueCookie.set(
-          'access_token',
-          res.data.access_token,
-          res.data.expires_in
-        )
-        result = res.data
-      } else {
-        console.log(res.data.errmsg)
-      }
-    })
+  axios.post(url, {
+    params: {
+      corpid: corpid || configs.corpId,
+      corpsecret: corpsecret || configs.corpSecret
+    }
+  }).then(res => {
+    if (res.status === 200 && res.data.errcode === 0) {
+      console.log('成功获取企业微信应用AccessToken')
+      VueCookie.set(
+        'access_token',
+        res.data.access_token,
+        res.data.expires_in
+      )
+      result = res.data
+    } else {
+      console.log(res.data.errmsg)
+    }
+  })
 
   return result
 }
