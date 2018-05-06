@@ -1,7 +1,7 @@
 <template>
   <div id="appBar">
      <router-view></router-view>
-      <mu-bottom-nav shift  :value="curAppBar" @change="handleChange">
+      <mu-bottom-nav :value="curAppBar" @change="handleChange">
       <mu-bottom-nav-item v-for="item in appBars" :key="item.path" :value="item.path" 
       :title="item.title" :icon="item.icon" :to="item.path"/>
     </mu-bottom-nav>    

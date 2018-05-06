@@ -7,6 +7,9 @@ const pageEventCalendar = () =>
 const pageUserRest = () =>
   import ('@/pages/components/userDuty.vue')
 
+const pageUserAuth = () =>
+  import ('@/pages/components/userAuth.vue');
+
 const subRouter = [{
 
   //  报餐
@@ -35,6 +38,16 @@ const subRouter = [{
   component: pageUserRest,
   meta: {
     title: '员工调休'
+  }
+
+}, {
+
+  //  员工授权
+  path: 'userAuth',
+  name: 'user auth',
+  component: pageUserAuth,
+  meta: {
+    title: '用户授权登录'
   }
 
 }, {

@@ -18,6 +18,11 @@ const mainRouter = new Router({
 })
 
 mainRouter.beforeEach((to, from, next) => {
+  console.log(to)
+
+  if (window.Store.getters.needLogin && to.path !== '/userAuth') {
+    next('/userAuth');
+  }
   if (to.meta.title) {
     document.title = to.meta.title
   }

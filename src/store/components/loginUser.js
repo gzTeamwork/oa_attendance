@@ -1,4 +1,4 @@
-import VueCookie from 'vue-cookies';
+import VueCookie from 'vue-cookies'
 
 const state = {
   needAuth: true,
@@ -9,6 +9,7 @@ const state = {
 }
 
 const getters = {
+  //  获取用户信息
   getUserInfo: state => {
     let cookieUser = JSON.parse(VueCookie.get('loginUser')) || null
     if (cookieUser == null) {
