@@ -32,7 +32,7 @@ export default {
       }
     }
   },
-  created: function() {
+  uncreated: function() {
     //  应用初始化
     let vm = this;
     //  用户缓存和捕捉code参数

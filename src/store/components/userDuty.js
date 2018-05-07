@@ -1,6 +1,5 @@
 const state = {
   curMonthEvents: []
-
 }
 
 const getters = {
@@ -19,8 +18,11 @@ const mutations = {
     console.log('接收当月排班数据')
     payload.map((e, i) => {
       let event = payload[i]
-      event.date = new Date(e.date).Format('yyyy/MM/dd')
-      event.title = '日历事件'
+      if (event.date !== null) {
+        event.dateObject = e.date
+        event.date = new Date(e.date).Format('yyyy/MM/dd')
+        event.title = '日历事件'
+      }
       newEvents.push(event)
     })
     state.curMonthEvents = newEvents

@@ -1,5 +1,7 @@
 import Vue from 'vue'
 import Axios from 'axios'
+// import Axios from './vueAxios.js'
+
 import VueCookie from 'vue-cookies'
 import apiConfig from '@/configs/api.Config.js'
 import Store from '@/store'
@@ -15,7 +17,7 @@ const configs = apiConfig
 
 // 获取当前使用环境
 const devMode = process.env.NODE_ENV === 'development'
-console.log(devMode)
+console.log('本次访问模式为' + (devMode ? '开发模式' : '生产模式'))
 
 // 接口地址 - 构建开发与生产api接口
 let remoteRoot = 'http://oa.emking.cn/inforward/api/'
@@ -30,24 +32,26 @@ Store.dispatch('testCommit', '测试')
 // 添加请求拦截器
 vueAxios.interceptors.request.use(function (config) {
   // 在发送请求之前做些什么
-  window.$nprogress.start()
+  window.Nprogress.start()
   return config
 }, function (error) {
   // 对请求错误做些什么
   devMode && console.log(error)
-  window.$nprogress.done()
+  window.Nprogress.done()
   return Promise.reject(error)
 })
 
 // 添加响应拦截器
 vueAxios.interceptors.response.use(function (response) {
   // 对响应数据做点什么
-  window.$nprogress.done()
+  window.Nprogress.done()
+
   return response
 }, function (error) {
   // 对响应错误做点什么
   devMode && console.log(error)
-  window.$nprogress.done()
+  window.Nprogress.done()
+
   return Promise.reject(error)
 })
 
@@ -138,21 +142,18 @@ let getRestEventsByMonth = function (today) {
 }
 
 //  获取员工信息
-let getUserInfo = function (userCode) {
-  Axios.get(apiRoot + 'get_user_info', {
+let getUserInfoByCode = function (userCode) {
+  console.log('与服务器通讯获取用code换取用户信息')
+
+  vueAxios.get('get_user_info_by_code', {
     params: {
-      user_code: userCode || null
+      user_code: userCode
     }
   }).then(res => {
     if (res.status === 200) {
       console.log('成功获取员工信息')
       console.log(res.data)
-      //  抛出员工信息
-      // window.EventBus.$emit('userInfo', res.data)
-      // Store.dispatch('changeUserInfo', res.data)
-      //  缓存员工票据
-      VueCookie.set('userTicket', res.data.user_ticket, 7200)
-      window.Store.commit('changeUserTicket', res.data.user_ticket)
+      // window.Store.commit('changeUserTicket', res.data.user_ticket)
       window.Store.commit('changeUserInfo', res.data)
       return res.data
     } else {
@@ -179,9 +180,7 @@ let getUserInfoByTicket = function (userTicket) {
 }
 
 let getUserInfoById = function (userId) {
-  console.log('通过uiserId获取用户信息')
-
-  Axios.get(apiRoot + 'get_user_info_by_id', {
+  vueAxios.get('get_user_info_by_id', {
     params: {
       user_id: userId || null
     }
@@ -196,18 +195,30 @@ let getUserInfoById = function (userId) {
     }
   })
 }
+let remUserRestDay = function (cdate, userId) {
+  vueAxios.get('rem_rest_day_by_user', {
+    params: {
+      rest_day: cdate,
+      user_id: userId || null
+    }
+  }).then(res => {
+    if (res.status === 200) {
+      console.log('成功移除员工休息日期' + cdate)
+    }
+  })
+}
 //  获取员工的休假日
 let getRestDayByUser = function (userid) {
-  Axios.get(apiRoot + 'get_rest_day_by_user', {
+  vueAxios.get('get_rest_day_by_user', {
     params: {
       user_id: userid || null
     }
   }).then(res => {
     if (res.status === 200) {
       console.log('成功获取员工的休假日')
-      window.Store.commit('changeUserRestDay', res.data)
+      window.Store.commit('changeMonthEvents', res.data)
+
       // window.EventBus.$emit('curUserRestDay', res.data)
-      return res.data
     } else {
       console.log(res.errmsg)
     }
@@ -233,7 +244,7 @@ let getAllUser = function () {
 
 //  提交员工排班数据
 let setuserAttendance = function (oldRestDay, restDay, userId, userName) {
-  Axios.get(apiRoot + 'set_user_attendance', {
+  vueAxios.get('set_user_attendance', {
     params: {
       old_day: oldRestDay || null,
       rest_day: restDay,
@@ -254,9 +265,6 @@ let setuserAttendance = function (oldRestDay, restDay, userId, userName) {
 }
 //  获取员工近日报餐数据
 let getUserWeekMeal = function (useid) {
-
-  vueAxios.get('get_user_week_meal')
-
   let datas = []
   //  产生数据
   let todayDate = new Date()
@@ -285,7 +293,7 @@ let getUserWeekMeal = function (useid) {
     datas.push(event)
   }
 
-  window.Store.commit('changUserWeekMeals', datas)
+  window.EventBus.$emit('getUserWeekMeal', datas)
   return datas
 }
 
@@ -306,44 +314,26 @@ let attendUserMeal = function (userid, mealDate, mealData) {
     }
   })
 }
-
-//  提交员工一周报餐
-let setUserWeekMeals = function (weekEvents, userid) {
-  vueAxios.post('set_user_week_meals', {
-    params: {
-      events: weekEvents,
-      user_id: userid
-    }
-  }).then(response => {
-    if (response.stauts === 200) {}
-  })
-}
-
 //  获取明天员工报餐统计
 let getTomorrowDailyMeals = function () {
-  vueAxios.get('get_tomorrow_daily_meals').then(res => {
-    if (res.status === 200) {
-      window.Store.commit('changeTomorrowDailyMeals', res.data)
+  let result = [{
+    userid: 'GuoZiHao',
+    name: '郭子豪',
+    avatar: '123',
+    needMeal: true
+  }, {
+    userid: 'GuoZiHao',
+    name: '郭子豪',
+    avatar: '123',
+    needMeal: false
+  }]
+  window.EventBus.$emit('getTomorrowDailyMeals', result)
+  return result
+  vueAxios.get('get_tomorrow_daily_meals').then(response => {
+    if (response.stauts === 200) {
+      window.EventBus.$emit('getTomorrowDailyMeals', response.data)
     }
   })
-  // let result = [{
-  //   userid: 'GuoZiHao',
-  //   name: '郭子豪',
-  //   avatar: '123',
-  //   needMeal: true
-  // }, {
-  //   userid: 'GuoZiHao',
-  //   name: '郭子豪',
-  //   avatar: '123',
-  //   needMeal: false
-  // }]
-  // window.EventBus.$emit('getTomorrowDailyMeals', result)
-  // return result
-  // vueAxios.get('get_tomorrow_daily_meals').then(response => {
-  //   if (response.stauts === 200) {
-  //     window.EventBus.$emit('getTomorrowDailyMeals', response.data)
-  //   }
-  // })
 }
 
 /**
@@ -362,8 +352,6 @@ const serverApi = {
   login: wxWorkLogin,
   serverUrl: apiRoot,
   getToken: getToken,
-  //  获取员工信息
-  getUserInfo: getUserInfo,
   //  获取所有员工信息
   getAllUser: getAllUser,
   //  提交员工排班数据
@@ -372,8 +360,13 @@ const serverApi = {
   getRestEventsByMonth: getRestEventsByMonth,
   //  获取当月排班数据
   getCurMonthEvents: getCurMonthEvents,
+  // 通过用户code获取用户信息
+  getUserInfoByCode: getUserInfoByCode,
   //  获取员工的休假纪录
   getRestDayByUser: getRestDayByUser,
+  //  取消员工休息日期
+  userCancelRestDay: remUserRestDay,
+
   //  通过员工user_id获取员工信息,调试开发专用
   getUserInfoById: getUserInfoById,
   //  通过员工票据获取员工信息
@@ -383,8 +376,6 @@ const serverApi = {
   //  提交员工报餐数据
   attendUserMeal: attendUserMeal,
   //  获取明天报餐数据
-  getTomorrowDailyMeals: getTomorrowDailyMeals,
-  //  提交一周内报餐
-  setUserWeekMeals: setUserWeekMeals
+  getTomorrowDailyMeals: getTomorrowDailyMeals
 }
 export default serverApi

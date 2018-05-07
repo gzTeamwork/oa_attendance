@@ -74,41 +74,7 @@ export default {
   },
   created: function() {
     let vm = this;
-    //  定位今天
-
-    // // 接收当月休息数据
-    // window.EventBus.$on("curMonthRests", function(restDays) {
-    //   console.log("捕捉到当月休假时间");
-    //   vm.restEvents = restDays;
-    //   let events = [];
-    //   restDays.map(function(re) {
-    //     events.push({
-    //       date: new Date(re.date).Format("yyyy/MM/dd"),
-    //       title: "休假",
-    //       name: re.username
-    //     });
-    //   });
-    //   vm.calenderEvents = events;
-    // });
-
-    //  接收当月排班数据
-    // window.EventBus.$on("curMonthEvents", events => {
-    //   let newEvents = [];
-    //   console.log("接收当月排班数据");
-    //   events.map((e, i) => {
-    //     let event = events[i];
-    //     event.date = new Date(e.date).Format("yyyy/MM/dd");
-    //     event.title = "日历事件";
-    //     newEvents.push(event);
-    //   });
-    //   vm.calenderEvents = newEvents;
-    // });
   },
-  // activated: function() {
-  //   let vm = this;
-  //   vm.$serverApi.getCurMonthEvents(today);
-  //   vm.msg = "数据更新于" + dateNow.Format("yyyy-M-d h:m:s");
-  // },
   mounted: function() {
     let vm = this;
     setTimeout(() => {
@@ -119,11 +85,7 @@ export default {
     handlerMonthEvents: function(v) {
       let vm = this;
       console.log(v);
-      // this.$set(this.calenderEvents, v);
       vm.calenderEvents = v;
-      // setTimeout(() => {
-      //   vm.$EventCalendar.toDate(today);
-      // }, 1000);
     }
   },
   computed: {
@@ -134,17 +96,17 @@ export default {
   methods: {
     //  日期切换事件
     handleDayChanged: function(dateEvent) {
-      // console.log(dateEvent);
+      console.log("排班日历日期切换");
       let vm = this;
       vm.msg = "当前选择日期为" + dateEvent.date;
     },
     //  月份切换事件
     handleMonthChanged: function(dateEvent) {
-      console.log(dateEvent);
+      console.log("排班日期月份切换");
       let year = dateEvent.substring(0, 4);
       let month = dateEvent.substring(5, 7);
       let curMonthDate = year + "-" + month + "-01";
-      console.log(curMonthDate);
+      // console.log(curMonthDate);
 
       this.$serverApi.getCurMonthEvents(curMonthDate);
       return false;

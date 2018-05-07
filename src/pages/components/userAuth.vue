@@ -8,30 +8,38 @@
         </mu-flexbox-item>
         <mu-raised-button label="用户登录" @click="handleUserAuth">
         </mu-raised-button>
+        <br/>
+        <mu-raised-button v-if="isDev" label="本地调试" @click="handleUserAuthLocal"></mu-raised-button>
       </mu-flexbox>
     </div>
   </div>
 </template>
 <script>
-  export default {
-    name: "userAuth",
-    data() {
-      return {
-        needLogin: true,
-      }
+export default {
+  name: "userAuth",
+  data() {
+    return {
+      needLogin: true,
+      isDev: process.env.NODE_ENV === "development"
+    };
+  },
+  methods: {
+    //  获取用户信息
+    handleUserAuth: function() {
+      //  跳转授权
+      let vm = this;
+      vm.$weixinApi.getUserAuth();
     },
-    methods: {
-      //  获取用户信息
-      handleUserAuth: function () {
-        //  跳转授权
-        let vm = this;
-        vm.$weixinApi.getUserAuth();
-      }
-    },
-    created: function () {
-
-    },
-  }
-
+    handleUserAuthLocal: function() {
+      //  本地开发授权测试
+      let vm = this;
+      vm.$serverApi.getUserInfoById("GuoZiHao");
+      setTimeout(function() {
+        window.location.href = window.location.origin + "/userRest";
+      }, 2000);
+    }
+  },
+  created: function() {}
+};
 </script>
 <style></style>

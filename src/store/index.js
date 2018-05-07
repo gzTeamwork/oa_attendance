@@ -5,7 +5,7 @@ import TestUnit from './components/testUnit/'
 import LoginUser from './components/loginUser.js'
 import UserDuty from './components/userDuty.js'
 let UserDailyMeals = () =>
-  import ('./components/userDailyMeals')
+  import('./components/userDailyMeals')
 Vue.use(Vuex)
 
 const Store = new Vuex.Store({
@@ -16,6 +16,6 @@ const Store = new Vuex.Store({
     userDailyMeals: UserDailyMeals
   }
 })
-console.log(Store)
+// console.log(Store)
 
 export default Store

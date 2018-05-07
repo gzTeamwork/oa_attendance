@@ -23,12 +23,13 @@
         <mu-avatar backgroundColor="blue300" slot="left">{{index+1}}</mu-avatar>
         <div slot="title">
           <!-- <span>第 {{index + 1}} 天</span> -->
-        <mu-date-picker hintText="选择排休日期" :firstDayOfWeek="0" :minDate="minDate" :maxDate="maxDate" :disabled="isabledDay(item.date)"
-          :shouldDisableDate="getDisableDate" @change="datePickerChange($event,index)" :value="item.date" />
-          <div v-if="isabledDay(item.date)">
+           <div v-if="isabledDay(item.date)">
             此休息日已经过期,无法修改
           </div>
-          <mu-float-button icon="close" mini slot="after" :disabled="isabledDay(item.date)"/>
+        <mu-date-picker hintText="选择排休日期" :firstDayOfWeek="0" :minDate="minDate" :maxDate="maxDate" :disabled="isabledDay(item.date)"
+          :shouldDisableDate="getDisableDate" @change="datePickerChange($event,index)" :value="item.dateObject" />
+         
+          <mu-float-button icon="close" mini slot="after" :disabled="isabledDay(item.date)" @click="handleCancelRes($event,index)"/>
         </div>
         </mu-list-item>
       </mu-list>
@@ -83,39 +84,6 @@ export default {
     //  获取用户调休日期
     // this.workerRestDays = this.$store.getters.getUserRestDay;
 
-    // //  接收UserInfo
-    // EventBus.$on("userInfo", user => {
-    //   console.log("捕捉用户信息成功");
-    //   //  缓存userInfo
-    //   vm.$cookies.set("userInfo", user, "1d");
-    //   //  拿到用户信息之后，缓存用户信息
-
-    //   vm.userInfo = user;
-    //   vm.needLogin = false;
-    //   // 有了userid,就获取对应的休假日
-    //   vm.$serverApi.getRestDayByUser(user.userid);
-    // });
-
-    // //  接收当前用户休假日
-    // EventBus.$on("curUserRestDay", days => {
-    //   console.log("捕捉当前用户休假日数据");
-    //   // vm.workerRestDays = vm.$helper.getO2A(days);
-    //   if (days.length < 2) {
-    //     for (let i = days.length; i < 2; i++) {
-    //       days.push({
-    //         date: null
-    //       });
-    //     }
-    //   }
-    //   vm.workerRestDays = days;
-    // });
-
-    // //  接收AppToken
-    // EventBus.$on("appToken", token => {
-    //   console.log("捕捉appToken" + token);
-    //   vm.appToken = token;
-    // });
-
     let date = new Date();
     vm.today = date.Format("yyyy/MM/dd");
     vm.minDate = date.Format("yyyy-MM-dd");
@@ -133,10 +101,7 @@ export default {
         // this.userInfo = v;
         console.log(v);
         let vm = this;
-        this.$serverApi.getRestDayByUser(v.userid);
-        setTimeout(function() {
-          vm.workerRestDays = window.Store.getters.getUserRestDay;
-        }, 500);
+        vm.$serverApi.getRestDayByUser(v.userid);
       }
     },
     handlerUserRestDays: function(v, ov) {
@@ -150,11 +115,17 @@ export default {
         }
       }
       this.workerRestDays = v;
+    },
+    workerRestDays: {
+      handler(val, oldVal) {
+        console.log(val); //但是这两个值打印出来却都是一样的
+      },
+      deep: true
     }
   },
   computed: {
     handlerUserRestDays() {
-      return this.$store.state.userDuty.curMonthEvents;
+      return window.Store.state.userDuty.curMonthEvents;
     }
   },
   methods: {
@@ -205,7 +176,7 @@ export default {
       // console.log(dateDate.getDate() - todayDate.getDate());
       return dateDate - todayDate < 0;
     },
-    //  日期选择
+    //  日期选择 - 提交日期
     datePickerChange: function(date, item) {
       let vm = this;
 
@@ -215,7 +186,7 @@ export default {
         vm.toast.msg = date + "此日期为不可选";
         return false;
       }
-      let odate = vm.workerRestDays[item].date;
+      let odate = vm.workerRestDays[item].dateObject;
       vm.workerRestDays[item].date = date;
       vm.toast.msg = "选择日期" + item + "为" + date;
       //  提交当前日期
@@ -226,6 +197,24 @@ export default {
         vm.userInfo.name
       );
       console.log(res);
+    },
+    //  用户取消日期
+    handleCancelRes(evnet, index) {
+      let vm = this;
+      let workerRestDays = vm.workerRestDays;
+      console.log(workerRestDays);
+
+      let cdate = vm.workerRestDays[index].date;
+      console.log("用户取消休假日期");
+
+      let res = vm.$serverApi.userCancelRestDay(
+        new Date(cdate).Format("yyyy-MM-dd"),
+        vm.userInfo.userid
+      );
+      workerRestDays[index] = { date: null };
+      console.log(workerRestDays);
+
+      window.Store.commit("changeMonthEvents", workerRestDays);
     },
     //  获取用户信息
     handleUserAuth: function() {
