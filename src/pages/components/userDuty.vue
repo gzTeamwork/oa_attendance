@@ -2,35 +2,37 @@
   <div id='pageDuty'>
     <br>
     <muse-toast :msg="toast.msg"></muse-toast>
-    <div v-if="needLogin" style="height: 640px;display: flex;justify-content: center;align-items: center">
-      <mu-flexbox orient="vertical" justify="center" align="center">
-        <mu-flexbox-item>
-          <p style="text-align:center">当前用户未授权登录</p>
-          <p style="text-align:center">请点击下方按钮开始授权</p>
-        </mu-flexbox-item>
-        <mu-raised-button label="用户登录" @click="handleUserAuth"></mu-raised-button>
-      </mu-flexbox>
-    </div>
     <div v-if="!needLogin">
-      <!-- 日期弹框 -->
-      <mu-avatar slot="left" :src="userInfo.avatar || defaultAvatar" :size="96" />
-      <mu-card-title :title="userInfo.name || '企业微信昵称'" :subTitle="userInfo.english_name ||''">
-      </mu-card-title>
-      <mu-badge :content="userInfo.position||'员工'" primary slot="after" />
-      <mu-card-title :title="'本月排休可 '+ workerRestDays.length +' 天 '" subTitle="Rest Days" />
+      <!-- 员工信息 -->
+      <div>
+        <mu-avatar slot="left" :src="userInfo.avatar || defaultAvatar" :size="96" />
+        <mu-card-title :title="userInfo.name || '企业微信昵称'" :subTitle="userInfo.english_name ||''">
+        </mu-card-title>
+        <mu-badge :content="userInfo.position||'员工'" primary slot="after" />
+        <mu-card-title :title="'本月可排休 '+ workerRestDays.length +' 天 '" subTitle="Rest Days" />
+      </div>
       <mu-list>
         <mu-list-item v-for="(item,index) in workerRestDays" :key="index">
-        <mu-avatar backgroundColor="blue300" slot="left">{{index+1}}</mu-avatar>
-        <div slot="title">
-          <!-- <span>第 {{index + 1}} 天</span> -->
-           <div v-if="isabledDay(item.date)">
-            此休息日已经过期,无法修改
-          </div>
-        <mu-date-picker hintText="选择排休日期" :firstDayOfWeek="0" :minDate="minDate" :maxDate="maxDate" :disabled="isabledDay(item.date)"
-          :shouldDisableDate="getDisableDate" @change="datePickerChange($event,index)" :value="item.dateObject" />
-         
-          <mu-float-button icon="close" mini slot="after" :disabled="isabledDay(item.date)" @click="handleCancelRes($event,index)"/>
-        </div>
+          <mu-paper style="padding:1em;">
+            <div>
+               第<mu-avatar backgroundColor="blue300" >{{index+1}}</mu-avatar>天
+            </div>
+            <div>               
+                <!-- 调休日期选择 -->
+                日期:
+                <mu-date-picker hintText="选择排休日期" :firstDayOfWeek="0" :minDate="minDate" :maxDate="maxDate" :disabled="isabledDay(item.date)"
+                :shouldDisableDate="getDisableDate" @change="datePickerChange($event,index)" :value="item.dateObject" />
+                 <div v-if="isabledDay(item.date)">
+                  此休息日已经过期,无法修改
+                </div>
+                <div v-else>
+                  点击选择调休日期
+                </div>
+            </div>
+            <div>
+               <mu-float-button icon="close" mini :disabled="isabledDay(item.date)" @click="handleCancelRes($event,index)" secondary >清除</mu-float-button>
+            </div>
+          </mu-paper>
         </mu-list-item>
       </mu-list>
     </div>
@@ -78,11 +80,11 @@ export default {
     let vm = this;
 
     //  获取用户信息
-    this.userInfo = this.$store.getters.getUserInfo;
+    vm.userInfo = vm.$store.getters.getUserInfo;
     //  获取登录状态
-    this.needLogin = this.$store.getters.needLogin;
+    vm.needLogin = vm.$store.getters.needLogin;
     //  获取用户调休日期
-    // this.workerRestDays = this.$store.getters.getUserRestDay;
+    vm.workerRestDays = vm.$store.getters.getUserRestDay;
 
     let date = new Date();
     vm.today = date.Format("yyyy/MM/dd");
@@ -96,17 +98,21 @@ export default {
   mounted: function() {},
   watch: {
     userInfo: function(v, ov) {
-      console.log("userInfo改变了");
+      console.log(
+        "监听到用户信息发生变化,即将根据用户信息获取用户调休日期数据..."
+      );
       if (v.userid) {
         // this.userInfo = v;
-        console.log(v);
-        let vm = this;
-        vm.$serverApi.getRestDayByUser(v.userid);
+        console.log("监听当前用户为" + v.username);
+        this.$serverApi.getRestDayByUser(v.userid);
+      } else {
+        console.error("监听当前用户数据为空,取消更新值操作");
+        return false;
       }
     },
     handlerUserRestDays: function(v, ov) {
-      console.log("userRestDays改变了");
-
+      console.log("监听到当前用户调休数据变化");
+      //不满可调休日数的,补满显示
       if (v.length < 2) {
         for (let i = v.length; i < 2; i++) {
           v.push({
@@ -118,7 +124,7 @@ export default {
     },
     workerRestDays: {
       handler(val, oldVal) {
-        console.log(val); //但是这两个值打印出来却都是一样的
+        console.log("监听到当前用户调休数据变化"); //但是这两个值打印出来却都是一样的
       },
       deep: true
     }
@@ -176,8 +182,9 @@ export default {
       // console.log(dateDate.getDate() - todayDate.getDate());
       return dateDate - todayDate < 0;
     },
-    //  日期选择 - 提交日期
+    //  日期选择 - 向服务器提交日期
     datePickerChange: function(date, item) {
+      console.log("用户选择调休日期" + date);
       let vm = this;
 
       let dateDate = new Date(date);
@@ -196,54 +203,26 @@ export default {
         vm.userInfo.userid,
         vm.userInfo.name
       );
-      console.log(res);
     },
     //  用户取消日期
-    handleCancelRes(evnet, index) {
+    handleCancelRes(event, index) {
+      console.log("当前用户取消调休日期" + event);
+
       let vm = this;
       let workerRestDays = vm.workerRestDays;
-      console.log(workerRestDays);
+      // console.log(workerRestDays);
 
       let cdate = vm.workerRestDays[index].date;
-      console.log("用户取消休假日期");
+      // console.log("用户取消休假日期");
 
       let res = vm.$serverApi.userCancelRestDay(
         new Date(cdate).Format("yyyy-MM-dd"),
         vm.userInfo.userid
       );
       workerRestDays[index] = { date: null };
-      console.log(workerRestDays);
+      // console.log(workerRestDays);
 
       window.Store.commit("changeMonthEvents", workerRestDays);
-    },
-    //  获取用户信息
-    handleUserAuth: function() {
-      //  跳转授权
-      let vm = this;
-      vm.$weixinApi.getUserAuth();
-    },
-    //  用户提交排班信息
-    handleSubmit: function() {
-      // @destroyed 已弃用
-      let vm = this;
-      let dateData = vm.workerRestDays;
-      let restDays = [];
-      let valid = true;
-
-      //  验证输入项
-      dateData.map(e => {
-        // console.log(e);
-        valid = valid && e.date !== null;
-        restDays.push(e.date);
-      });
-      vm.valids = valid;
-
-      if (valid) {
-        console.log("排休日期验证通过..");
-        vm.$serverApi.attendSubmit(restDays, vm.userInfo.userid);
-      } else {
-        vm.toast.msg = "请选择您宝贵的排休日期";
-      }
     }
   }
 };
@@ -256,5 +235,8 @@ export default {
 
 .mu-text-field-input {
   text-align: center !important;
+}
+.mu-text-field-input:disabled {
+  text-decoration: line-through;
 }
 </style>

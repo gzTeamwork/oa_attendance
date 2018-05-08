@@ -34,12 +34,23 @@ export default {
       //  本地开发授权测试
       let vm = this;
       vm.$serverApi.getUserInfoById("GuoZiHao");
-      setTimeout(function() {
-        window.location.href = window.location.origin + "/userRest";
-      }, 2000);
+      // setTimeout(function() {
+      //   window.location.href = window.location.origin + "/userRest";
+      // }, 2000);
     }
   },
-  created: function() {}
+  watch: {
+    handlerUserInfo: function(v, ov) {
+      if (v.userid !== null) {
+        window.location.href = window.location.origin + "/userRest";
+      }
+    }
+  },
+  computed: {
+    handlerUserInfo: function() {
+      return this.$store.getters.getUserInfo;
+    }
+  }
 };
 </script>
 <style></style>

@@ -189,8 +189,6 @@ let getUserInfoById = function (userId) {
       console.log('成功获取员工信息')
       // Store.commit('changeUserInfo', res.data)
       window.Store.commit('changeUserInfo', res.data[0])
-      // window.EventBus.$emit('userInfo', res.data)
-      // window.EventBus.$emit('needAuth', false)
       return res.data
     }
   })
@@ -327,7 +325,10 @@ let getTomorrowDailyMeals = function () {
     avatar: '123',
     needMeal: false
   }]
-  window.EventBus.$emit('getTomorrowDailyMeals', result)
+
+  window.Store.commit('changeTomorrowDailyMeals', result)
+
+  // window.EventBus.$emit('getTomorrowDailyMeals', result)
   return result
   vueAxios.get('get_tomorrow_daily_meals').then(response => {
     if (response.stauts === 200) {

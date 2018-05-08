@@ -1,14 +1,14 @@
 const pageDailyMeal = () =>
-  import ('@/pages/components/dailyMeal.vue')
+  import('@/pages/components/dailyMeal.vue')
 
 const pageEventCalendar = () =>
-  import ('@/pages/components/eventCalendar.vue')
+  import('@/pages/components/eventCalendar.vue')
 
 const pageUserRest = () =>
-  import ('@/pages/components/userDuty.vue')
+  import('@/pages/components/userDuty.vue')
 
 const pageUserAuth = () =>
-  import ('@/pages/components/userAuth.vue');
+  import('@/pages/components/userAuth.vue')
 
 const subRouter = [{
 
@@ -51,6 +51,7 @@ const subRouter = [{
   }
 
 }, {
+
   //  默认路由
   path: '',
   name: 'user rest',

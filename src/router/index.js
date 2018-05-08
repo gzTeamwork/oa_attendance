@@ -12,7 +12,7 @@ const mainRouter = new Router({
     name: 'index page',
     component: pageAppBar,
     meta: {
-      title: '企业排版表'
+      title: '移动办公增强'
     },
     children: SubRouter
   }]
@@ -23,17 +23,14 @@ mainRouter.beforeEach((to, from, next) => {
 
   //  用户未进行登录,则跳转到授权页面
   if (to.path === '/userAuth') {
-    console.log('检测到有code和state,进入用户授权过程')
-
     let state = to.query.state || null
     let code = to.query.code || null
 
-    console.log(to.query)
-    if (state !== null && code !== null) {
+    // console.log(state, code)
+    if (state === 'wxwork_login' && code !== null) {
+      console.log('检测到有code和state,进入用户授权过程')
+
       ServerApi.getUserInfoByCode(code)
-      setTimeout(function () {
-        window.location.href = window.location.origin + '/userRest'
-      }, 1500)
     } else {
       next()
     }

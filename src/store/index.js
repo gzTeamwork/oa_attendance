@@ -4,8 +4,7 @@ import Vuex from 'vuex'
 import TestUnit from './components/testUnit/'
 import LoginUser from './components/loginUser.js'
 import UserDuty from './components/userDuty.js'
-let UserDailyMeals = () =>
-  import('./components/userDailyMeals')
+import userDailyMeals from './components/userDailyMeals'
 Vue.use(Vuex)
 
 const Store = new Vuex.Store({
@@ -13,7 +12,8 @@ const Store = new Vuex.Store({
     testUnit: TestUnit,
     loginUser: LoginUser,
     userDuty: UserDuty,
-    userDailyMeals: UserDailyMeals
+    userDailyMeals: userDailyMeals
+
   }
 })
 // console.log(Store)
