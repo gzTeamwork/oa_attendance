@@ -12,7 +12,7 @@ let getUrlJson = function (url) {
     return rs
   })
   return obj
-};
+}
 //  获取对象元素个数,浅统计
 let objectLength = function (obj) {
   let n = 0
@@ -23,7 +23,7 @@ let objectLength = function (obj) {
     }
   }
   return n
-};
+}
 //  对象转数组,浅复制
 let objectToArray = function (ob) {
   let arr = []
@@ -35,7 +35,7 @@ let objectToArray = function (ob) {
     arr.push(o)
   })
   return arr
-};
+}
 
 const helper = {
   getUrlJson: getUrlJson,

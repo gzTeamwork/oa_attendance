@@ -1,7 +1,6 @@
 <template>
   <div id='pageDuty'>
     <br>
-    <muse-toast :msg="toast.msg"></muse-toast>
     <div v-if="!needLogin">
       <!-- 员工信息 -->
       <div>
@@ -11,27 +10,30 @@
         <mu-badge :content="userInfo.position||'员工'" primary slot="after" />
         <mu-card-title :title="'本月可排休 '+ workerRestDays.length +' 天 '" subTitle="Rest Days" />
       </div>
+      <!-- 调休列表 -->
       <mu-list>
         <mu-list-item v-for="(item,index) in workerRestDays" :key="index">
           <mu-paper style="padding:1em;">
             <div>
-               第<mu-avatar backgroundColor="blue300" >{{index+1}}</mu-avatar>天
+               第 <mu-avatar backgroundColor="blue300" >{{index+1}}</mu-avatar> 天
             </div>
             <div>               
                 <!-- 调休日期选择 -->
                 日期:
                 <mu-date-picker hintText="选择排休日期" :firstDayOfWeek="0" :minDate="minDate" :maxDate="maxDate" :disabled="isabledDay(item.date)"
                 :shouldDisableDate="getDisableDate" @change="datePickerChange($event,index)" :value="item.dateObject" />
-                 <div v-if="isabledDay(item.date)">
+                
+            </div>
+             <mu-chip v-if="isabledDay(item.date)">
+                   <mu-avatar backgroundColor="red300" >否</mu-avatar>
                   此休息日已经过期,无法修改
-                </div>
-                <div v-else>
+                </mu-chip>
+                <mu-chip v-else @delete="handleCancelRes($event,index)" showDelete>
+                  <mu-avatar backgroundColor="green300" >可</mu-avatar>
                   点击选择调休日期
-                </div>
-            </div>
-            <div>
-               <mu-float-button icon="close" mini :disabled="isabledDay(item.date)" @click="handleCancelRes($event,index)" secondary >清除</mu-float-button>
-            </div>
+                </mu-chip>
+                  <!-- <mu-float-button icon="close" mini :disabled="isabledDay(item.date)" @click="handleCancelRes($event,index)" secondary >清除</mu-float-button> -->
+               
           </mu-paper>
         </mu-list-item>
       </mu-list>
@@ -40,9 +42,8 @@
 </template>
 
 <script>
-import museToast from "@/components/museToast.vue";
 import defaultAvatar from "@/assets/avatar.png";
-const vueDate = new Date();
+const todayDate = new Date();
 
 export default {
   name: "pageDuty",
@@ -51,12 +52,9 @@ export default {
       needLogin: true,
       userInfo: null,
       defaultAvatar: defaultAvatar,
-      restDay: 2,
       showDatePicker: false,
       minDate: 0,
       maxDate: 31,
-      today: null,
-      appToken: null,
       workerRestDays: [
         {
           date: null
@@ -64,17 +62,8 @@ export default {
         {
           date: null
         }
-      ],
-      toast: {
-        show: false,
-        message: "",
-        msg: ""
-      },
-      valids: false
+      ]
     };
-  },
-  components: {
-    "muse-toast": museToast
   },
   created: function() {
     let vm = this;
@@ -95,7 +84,6 @@ export default {
     date.setMonth(date.getMonth() + 1);
     vm.maxDate = new Date(date).Format("yyyy-MM-dd");
   },
-  mounted: function() {},
   watch: {
     userInfo: function(v, ov) {
       console.log(
@@ -135,10 +123,6 @@ export default {
     }
   },
   methods: {
-    getToday: function() {
-      let vueDate = new Date();
-      return vueDate.Format("yyyy-MM-dd");
-    },
     handleDatePoper: function(e) {
       let vm = this;
       vm.showDatePicker = true;
@@ -190,12 +174,12 @@ export default {
       let dateDate = new Date(date);
       let validDay = vm.getDisableDate(date);
       if (validDay) {
-        vm.toast.msg = date + "此日期为不可选";
+        vm.$store.commit("changeLog", date + "此日期为不可选");
         return false;
       }
       let odate = vm.workerRestDays[item].dateObject;
       vm.workerRestDays[item].date = date;
-      vm.toast.msg = "选择日期" + item + "为" + date;
+      vm.$store.commit("changeLog", "选择日期" + item + "为" + date);
       //  提交当前日期
       let res = vm.$serverApi.attendSubmit(
         odate,
@@ -207,8 +191,15 @@ export default {
     //  用户取消日期
     handleCancelRes(event, index) {
       console.log("当前用户取消调休日期" + event);
-
       let vm = this;
+      if (vm.workerRestDays[index].date == null) {
+        window.Store.commit("changeLog", "操作错误");
+        return false;
+      }
+      window.Store.commit(
+        "changeLog",
+        "清除调休日期:" + vm.workerRestDays[index].date
+      );
       let workerRestDays = vm.workerRestDays;
       // console.log(workerRestDays);
 

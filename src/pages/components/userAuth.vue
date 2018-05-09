@@ -23,6 +23,7 @@ export default {
       isDev: process.env.NODE_ENV === "development"
     };
   },
+
   methods: {
     //  获取用户信息
     handleUserAuth: function() {

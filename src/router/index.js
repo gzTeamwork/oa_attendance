@@ -29,7 +29,7 @@ mainRouter.beforeEach((to, from, next) => {
     // console.log(state, code)
     if (state === 'wxwork_login' && code !== null) {
       console.log('检测到有code和state,进入用户授权过程')
-
+      window.Nprogress.start()
       ServerApi.getUserInfoByCode(code)
     } else {
       next()

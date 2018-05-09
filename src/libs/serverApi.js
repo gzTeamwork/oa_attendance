@@ -1,19 +1,14 @@
 import Vue from 'vue'
+
 import Axios from 'axios'
 // import Axios from './vueAxios.js'
 
-import VueCookie from 'vue-cookies'
-import apiConfig from '@/configs/api.Config.js'
-import Store from '@/store'
+// import apiConfig from '@/configs/api.Config.js'
 // 接口配置
-const configs = apiConfig
+// const configs = apiConfig
 
-// const configs = {
-//   corpId: "wwdc02ce3b575253e3",
-//   corpSecret: "ipWlHNDjalbGoLOqB2mCR4lNz2GqgiSmx03OJms8PDw",
-//   appSecrect: "bLhYfEQsgz1zO5Y1kmoCQi_p96ZVCC65uRovbEX-qPM",
-//   agentId: "1000034"
-// };
+const configs = () =>
+  import ('@/configs/api.Config.js')
 
 // 获取当前使用环境
 const devMode = process.env.NODE_ENV === 'development'
@@ -24,11 +19,12 @@ let remoteRoot = 'http://oa.emking.cn/inforward/api/'
 let localRoot = 'http://admin.localhost.com/inforward/api/'
 let apiRoot = devMode ? localRoot : remoteRoot
 apiRoot = remoteRoot
+
 //  构造axios实例
 let vueAxios = Axios.create({
   baseURL: apiRoot
 })
-Store.dispatch('testCommit', '测试')
+
 // 添加请求拦截器
 vueAxios.interceptors.request.use(function (config) {
   // 在发送请求之前做些什么
@@ -45,7 +41,10 @@ vueAxios.interceptors.request.use(function (config) {
 vueAxios.interceptors.response.use(function (response) {
   // 对响应数据做点什么
   window.Nprogress.done()
+  //  响应状态判断
+  if (response.status !== 200) {
 
+  }
   return response
 }, function (error) {
   // 对响应错误做点什么
@@ -83,7 +82,7 @@ let getAppToken = function (corpId, corpSecret) {
 
 //  员工登录交互 - 带token
 let wxWorkLogin = function (token) {
-  let accessToken = token || VueCookie.get('corpAccessToken')
+  let accessToken = token || window.Cookies.get('corpAccessToken')
   Axios.get(apiRoot + 'wx_work_login', {
     params: {
       token: accessToken
@@ -262,28 +261,28 @@ let setuserAttendance = function (oldRestDay, restDay, userId, userName) {
   })
 }
 //  获取员工近日报餐数据
-let getUserWeekMeal = function (useid) {
+let getUserWeekMeal = function (userid, todayDate) {
+
   let datas = []
   //  产生数据
-  let todayDate = new Date()
+  todayDate = new Date()
 
   let weekDate = new Date()
-
-  weekDate.setDate(todayDate.getDay() - 7 + todayDate.getDate())
 
   let meats = ['蜜汁叉烧', '烧排骨', '酱油鸡', '蒸鱼']
   let vegetables = ['菠菜', '生菜', '娃娃菜']
   let soups = ['鸡汤', '鸭汤', '鱼汤', '骨头汤', '清保凉']
 
-  for (let i = 1; i < 7 + 1; i++) {
+  weekDate.setDate(weekDate.getDate() - 2)
+  for (let i = 0; i < 7; i++) {
     weekDate.setDate(weekDate.getDate() + 1)
     let event = {
       date: weekDate.Format('yyyy-MM-dd'),
       day: weekDate.getDay(),
       menu: {
-        'meat': meats[Math.round(Math.random() * meats.length)],
-        'vegetable': vegetables[Math.round(Math.random() * vegetables.length)],
-        'soup': soups[Math.round(Math.random() * soups.length)]
+        'meat': meats[Math.round(Math.random() * meats.length) - 1] || meats[0],
+        'vegetable': vegetables[Math.round(Math.random() * vegetables.length) - 1] || vegetables[0],
+        'soup': soups[Math.round(Math.random() * soups.length) - 1] || soups[0]
       },
       isCheck: false,
       isToday: todayDate.Format('yyyy-MM-dd') === weekDate.Format('yyyy-MM-dd')
@@ -291,27 +290,33 @@ let getUserWeekMeal = function (useid) {
     datas.push(event)
   }
 
-  window.EventBus.$emit('getUserWeekMeal', datas)
+  window.Store.commit('changeUserWeekMeals', datas)
+  vueAxios.get('get_user_daily_meal_in_week', {
+    params: {
+      user_id: userid || null,
+      begin_date: todayDate || new Date()
+    }
+  }).then(res => {
+    window.Store.commit('changeUserDailyMealInWeek', res.data)
+  })
+
   return datas
 }
 
 //  提交员工报餐数据
-let attendUserMeal = function (userid, mealDate, mealData) {
-  let timeStamp = new Date()
-  window.EventBus.$emit('attendUserMealsRes', timeStamp + '提交了数据')
-  vueAxios.post('attendUserMeal', {
+let attendUserDailyMeal = function (userid, mealEvent) {
+  vueAxios.get('attend_user_daily_meal', {
     params: {
       user_id: userid || null,
-      meal_date: mealDate || null,
-      meal_data: mealData || []
+      meal_check: mealEvent.isCheck ? 1 : 0,
+      meal_date: mealEvent.date || null
     }
-  }).then(response => {
-    if (response.status === 200) {
-      //  指派数据UserMeals
-      window.EventBus.$emit('attendUserMeals', response.data)
-    }
+  }).then(res => {
+    //  指派数据UserMeals
+    window.Store.commit('changeUserDailyMeal', res.data)
   })
 }
+
 //  获取明天员工报餐统计
 let getTomorrowDailyMeals = function () {
   let result = [{
@@ -374,9 +379,12 @@ const serverApi = {
   getUserInfoByTicket: getUserInfoByTicket,
   //  获取员工近日报餐数据
   getUserWeekMeal: getUserWeekMeal,
-  //  提交员工报餐数据
-  attendUserMeal: attendUserMeal,
+  //  批量提交员工报餐数据
+  // attendUserMeal: attendUserMeal,
   //  获取明天报餐数据
-  getTomorrowDailyMeals: getTomorrowDailyMeals
+  getTomorrowDailyMeals: getTomorrowDailyMeals,
+  // 提交员工单日报餐
+  attendUserDailyMeal: attendUserDailyMeal
+
 }
 export default serverApi
