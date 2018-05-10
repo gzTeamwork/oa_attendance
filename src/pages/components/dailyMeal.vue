@@ -1,22 +1,23 @@
 <template>
   <div id="dailyMeal">
-    <mu-appbar title="报餐">
-      <mu-icon-button icon="date_range" slot="left" @click="handleOpenTomorrow"></mu-icon-button>
-      <mu-icon-button icon="menu" slot="right"></mu-icon-button>
-    </mu-appbar>
     <mu-dialog :open="tomorrow.show" @ @close="handleTomorrowClose" title="明日报餐汇总" scrollable>
       <mu-list>
-        <mu-list-item :title="item.name" v-for="(item,index) in tomorrowEvents" :key="index">
+        <mu-list-item :title="item.name" v-for="(item,index) in tomorrowDailyMeals" :key="index">
           <mu-avatar :src="item.avatar" slot="leftAvatar"></mu-avatar>
           <mu-icon slot="right" value="eat" />
         </mu-list-item>
       </mu-list>
       <div slot="actions">
-        {{tomorrowEvents.date}}共有{{tomorrowEvents.length}}人吃饭
+        {{tomorrowDailyMeals.date}}共有{{tomorrowDailyMeals.length}}人吃饭
         <mu-flat-button primary label="关闭" @click="handleTomorrowClose" slot="actions" />
       </div>
     </mu-dialog>
-    <div v-if="!needLogin" >
+    <mu-appbar title="报餐">
+      <mu-icon-button icon="date_range" slot="left" @click="handleOpenTomorrow"></mu-icon-button>
+      <mu-icon-button icon="menu" slot="right"></mu-icon-button>
+    </mu-appbar>
+    
+    <div v-if="!needLogin">
       <div style="padding:1em;">
         <mu-avatar slot="left" :src="userInfo.avatar || defaultAvatar" :size="96" />
         <mu-card-title :title="userInfo.name || '企业微信昵称'" :subTitle="userInfo.english_name ||''">
@@ -80,7 +81,7 @@ export default {
       tomorrow: {
         show: false
       },
-      tomorrowEvents: {},
+      tomorrowDailyMeals: {},
       tomorrowMeals: 0,
       weekDay: ["日", "一", "二", "三", "四", "五", "六"]
     };
@@ -124,7 +125,7 @@ export default {
     //  打开明日列表
     handleOpenTomorrow: function() {
       this.tomorrow.show = true;
-      this.tomorrowEvents = this.$serverApi.getTomorrowDailyMeals();
+      this.$serverApi.getTomorrowDailyMeals();
     },
     //  关闭明日列表
     handleTomorrowClose: function() {
@@ -132,8 +133,19 @@ export default {
     }
   },
   watch: {
-    tomorrowEvents: function(v, ov) {
+    handlerTomorrowDailyMeal: function(v, ov) {
       console.log("监听明日报餐统计事件");
+      v.map(function(e, i) {
+        if (e.need_meal == 0) {
+          v.splice(i, 1);
+        }
+      });
+      this.tomorrowDailyMeals = v;
+    }
+  },
+  computed: {
+    handlerTomorrowDailyMeal: function() {
+      return this.$store.getters.getTomorrowDailyMeals;
     }
   }
 };

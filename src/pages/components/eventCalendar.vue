@@ -150,11 +150,14 @@ export default {
   padding: 0.5em;
 }
 .events-wrapper {
+  padding-top: 6em !important;
+
   border-radius: 0 !important;
 }
 @media screen and (max-width: 769px) {
   .events-wrapper {
     position: static !important;
+    padding-top: 40px !important;
   }
 }
 </style>

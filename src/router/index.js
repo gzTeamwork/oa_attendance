@@ -3,7 +3,7 @@ import SubRouter from './subRouter'
 import ServerApi from '@/libs/serverApi.js'
 import WeixinApi from '@/libs/weixinApi.js'
 const pageAppBar = () =>
-  import('@/pages/appBar.vue')
+  import ('@/pages/appBar.vue')
 
 const mainRouter = new Router({
   mode: 'history',
@@ -31,6 +31,9 @@ mainRouter.beforeEach((to, from, next) => {
       console.log('检测到有code和state,进入用户授权过程')
       window.Nprogress.start()
       ServerApi.getUserInfoByCode(code)
+      setTimeout(function () {
+        next('/userRest')
+      }, 2000)
     } else {
       next()
     }
@@ -49,6 +52,8 @@ mainRouter.beforeEach((to, from, next) => {
   }
 })
 
-mainRouter.afterEach(transition => {})
+mainRouter.afterEach(transition => {
+  window.Nprogress.done()
+})
 
 export default mainRouter

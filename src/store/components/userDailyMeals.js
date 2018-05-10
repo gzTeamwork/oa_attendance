@@ -4,7 +4,9 @@ const state = {
   userDailyMeals: []
 }
 const getters = {
-
+  getTomorrowDailyMeals: state => {
+    return state.tomorrowDailyMeals
+  }
 }
 
 const actions = {
@@ -31,7 +33,6 @@ const mutations = {
         state.userWeekMeals[index].isCheck = payload[event.date].need_meal || false
       }
     })
-
   }
 }
 

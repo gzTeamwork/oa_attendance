@@ -11,7 +11,7 @@
 <script>
 let appBars = [
   { title: "排班", path: "schedule", icon: "today" },
-  { title: "排休", path: "userRest", icon: "face" },
+  { title: "调休", path: "userRest", icon: "face" },
   { title: "报餐", path: "dailyMeal", icon: "local_dining" }
 ];
 export default {
@@ -46,5 +46,12 @@ export default {
 }
 #appBar .appBar-active {
   color: slateblue !important;
+}
+#appBar .mu-appbar {
+  position: fixed;
+  z-index: 1200;
+}
+#appBar .mu-appbar + div {
+  padding-top: 5em;
 }
 </style>
