@@ -21,22 +21,24 @@ export default {
     };
   },
   created() {
-    this.userInfo = this.$store.getters.getUserInfo;
+    this.userInfo = this.$store.getters.getUserInfo
+    let appLoad = document.getElementById('loading')
+    appLoad.style.display = "none";
   },
   watch: {
     handlerUserInfo: function(v, ov) {
       console.log("监听到用户数据发生变化");
-      let pageState = this.$route.query.state || null;
-      let pageUserCode = this.$route.query.code || null;
+      let pageState = this.$route.query.state || null
+      let pageUserCode = this.$route.query.code || null
 
       if (pageState !== null && pageUserCode !== null && v.userid !== null) {
-        this.$router.go("/userRest");
+        this.$router.go("/userRest")
       }
     }
   },
   computed: {
     handlerUserInfo: function() {
-      return this.$store.getters.getUserInfo;
+      return this.$store.getters.getUserInfo
     }
   }
 };

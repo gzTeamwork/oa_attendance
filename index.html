@@ -4,12 +4,61 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>排班表</title>
+  <title>OA增强</title>
+  <style>
+    #loading {
+      display: flex;
+      position: fixed;
+      flex-direction: column;
+      z-index: 1300;
+      background: white;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #loading .logo {
+      width: 50%;
+      max-width: 256px;
+      background: url(./static/imgs/logo.png) no-repeat center;
+      background-size: contain;
+      height: 50%;
+      max-height: 256px;
+    }
+
+    #loading .title {
+      position: relative;
+      animation: appTitleBounce 1s ease-in-out infinite alternate-reverse;
+      -moz-animation: appTitleBounce 1s ease-in-out infinite alternate-reverse;
+      -webkit-animation: appTitleBounce 1s ease-in-out infinite alternate-reverse;
+      -o-animation: appTitleBounce 1s ease-in-out infinite alternate-reverse;
+    }
+
+    @keyframes appTitleBounce {
+      0% {
+        top: 2%
+      }
+      100% {
+        top: -2%
+      }
+    }
+
+  </style>
 </head>
 
 <body>
+  <div id="loading">
+    <div class="logo">
+    </div>
+    <div class="title">LOADING...</div>
+  </div>
   <div id="app"></div>
   <!-- built files will be auto injected -->
 </body>
+<script>
+  var appLoading = document.getElementById('loading')
+  appLoading.style.width = window.screen.width + "px"
+  appLoading.style.height = window.screen.height + "px"
+
+</script>
 
 </html>
