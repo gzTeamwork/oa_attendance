@@ -80,8 +80,9 @@ export default {
     vm.minDate = date.Format("yyyy-MM-dd");
 
     //    上个月1号
-    date.setDate(-1);
-    date.setMonth(date.getMonth() + 1);
+    // date.setDate(-1);
+    // date.setMonth(date.getMonth() + 1);
+    date.setDate(+40);
     vm.maxDate = new Date(date).Format("yyyy-MM-dd");
   },
   watch: {
