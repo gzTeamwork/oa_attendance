@@ -8,7 +8,7 @@ import Axios from 'axios'
 // const configs = apiConfig
 
 const configs = () =>
-  import('@/configs/api.Config.js')
+  import ('@/configs/api.Config.js')
 
 // 获取当前使用环境
 const devMode = process.env.NODE_ENV === 'development'
@@ -344,6 +344,26 @@ let getTomorrowDailyMeals = function () {
   })
 }
 
+//  被扫码之后,向服务器获取资产内容
+let getItemInfoByScan = function (unionId) {
+  vueAxios.get('get_item_info_by_scan', {
+    params: {
+      union_id: unionId
+    }
+  }).then(res => {
+    window.Store.commit('changeScanItemInfo', res.data)
+  })
+}
+let getScanItems = function (num) {
+  vueAxios.get('get_item_infos', {
+    params: {
+      num: num
+    }
+  }).then(res => {
+    window.Store.commit('changeScanItems', res.data)
+  })
+}
+
 /**
  * 服务器数据交互接口类
  */
@@ -386,6 +406,10 @@ const serverApi = {
   //  获取明天报餐数据
   getTomorrowDailyMeals: getTomorrowDailyMeals,
   // 提交员工单日报餐
-  attendUserDailyMeal: attendUserDailyMeal
+  attendUserDailyMeal: attendUserDailyMeal,
+  //  获取被扫描物品信息
+  getItemInfoByScan: getItemInfoByScan,
+  //  获取物品二维码列表
+  getScanItems: getScanItems
 }
 export default serverApi

@@ -26,6 +26,7 @@
     "moment": "^2.22.0",
     "muse-ui": "^2.1.0",
     "nprogress": "^0.2.0",
+    "qrcode": "^1.2.0",
     "vue": "^2.5.2",
     "vue-circle-menu": "^1.1.1",
     "vue-cookies": "^1.5.6",

@@ -7,6 +7,8 @@ import LoginUser from './components/loginUser'
 import UserDuty from './components/userDuty'
 import userDailyMeals from './components/userDailyMeals'
 
+import scanItem from './propertyItem/item'
+import scanItems from './propertyItem/items'
 Vue.use(Vuex)
 
 const Store = new Vuex.Store({
@@ -15,7 +17,9 @@ const Store = new Vuex.Store({
     loginUser: LoginUser,
     userDuty: UserDuty,
     userDailyMeals: userDailyMeals,
-    appStatus: AppStatus
+    appStatus: AppStatus,
+    scanItem: scanItem,
+    scanItems: scanItems
   }
 })
 // console.log(Store)

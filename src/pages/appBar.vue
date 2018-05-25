@@ -1,10 +1,9 @@
 <template>
   <div id="appBar">
-     <router-view></router-view>
-      <mu-bottom-nav :value="curAppBar" @change="handleChange">
-      <mu-bottom-nav-item v-for="item in appBars" :key="item.path" :value="item.path" 
-      :title="item.title" :icon="item.icon" :to="item.path" activeClass="appBar-active"/>
-    </mu-bottom-nav>    
+    <router-view></router-view>
+    <mu-bottom-nav :value="curAppBar" @change="handleChange">
+      <mu-bottom-nav-item v-for="item in appBars" :key="item.path" :value="item.path" :title="item.title" :icon="item.icon" :to="item.path" activeClass="appBar-active" />
+    </mu-bottom-nav>
   </div>
 </template>
 
@@ -12,7 +11,8 @@
 let appBars = [
   { title: "排班", path: "schedule", icon: "today" },
   { title: "调休", path: "userRest", icon: "face" },
-  { title: "报餐", path: "dailyMeal", icon: "local_dining" }
+  { title: "报餐", path: "dailyMeal", icon: "local_dining" },
+  { title: "二维码", path: "qrcode", icon: "center_focus_strong" }
 ];
 export default {
   name: "appBar",

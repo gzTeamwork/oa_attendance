@@ -1,26 +1,42 @@
 import Router from 'vue-router'
 import SubRouter from './subRouter'
+
 import ServerApi from '@/libs/serverApi.js'
-import WeixinApi from '@/libs/weixinApi.js'
+// import WeixinApi from '@/libs/weixinApi.js'
 const pageAppBar = () =>
   import ('@/pages/appBar.vue')
-
+const pageScanQrcodeItem = () =>
+  import ('@/pages/property/scanItemInfo.vue')
 const mainRouter = new Router({
   mode: 'history',
   routes: [{
-    path: '/',
-    name: 'index page',
-    component: pageAppBar,
-    meta: {
-      title: '移动办公增强'
+      path: '/scan',
+      name: 'Scan Item Qrcode Page',
+      component: pageScanQrcodeItem,
+      meta: {
+        title: '盈富永泰资产管理二维码'
+      }
     },
-    children: SubRouter
-  }]
+    {
+      path: '/',
+      name: 'index page',
+      component: pageAppBar,
+      meta: {
+        title: '移动办公增强'
+      },
+      children: SubRouter
+    }
+  ]
 })
 
 mainRouter.beforeEach((to, from, next) => {
-  // console.log(to)
-
+  if (to.meta.title) {
+    document.title = to.meta.title || '盈富永泰集团'
+  }
+  console.log(to.path);
+  if (to.path.match('scan')) {
+    next()
+  }
   //  用户未进行登录,则跳转到授权页面
   if (to.path === '/userAuth') {
     let state = to.query.state || null
@@ -44,9 +60,6 @@ mainRouter.beforeEach((to, from, next) => {
     if (userInfo == null) {
       next('/userAuth')
     } else {
-      if (to.meta.title) {
-        document.title = to.meta.title || '盈富永泰集团'
-      }
       next()
     }
   }
