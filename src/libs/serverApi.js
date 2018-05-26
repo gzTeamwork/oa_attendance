@@ -18,7 +18,7 @@ console.log('本次访问模式为' + (devMode ? '开发模式' : '生产模式'
 let remoteRoot = 'http://oa.emking.cn/inforward/api/'
 let localRoot = 'http://admin.localhost.com/inforward/api/'
 let apiRoot = devMode ? localRoot : remoteRoot
-apiRoot = remoteRoot
+// apiRoot = remoteRoot
 
 //  构造axios实例
 let vueAxios = Axios.create({
@@ -346,7 +346,7 @@ let getTomorrowDailyMeals = function () {
 
 //  被扫码之后,向服务器获取资产内容
 let getItemInfoByScan = function (unionId) {
-  vueAxios.get('get_item_info_by_scan', {
+  vueAxios.get('get_qrcode_item_by_unionid', {
     params: {
       union_id: unionId
     }
@@ -354,8 +354,9 @@ let getItemInfoByScan = function (unionId) {
     window.Store.commit('changeScanItemInfo', res.data)
   })
 }
+//  获取多个二维码信息
 let getScanItems = function (num) {
-  vueAxios.get('get_item_infos', {
+  vueAxios.get('get_qrcode_items', {
     params: {
       num: num
     }
@@ -368,6 +369,8 @@ let getScanItems = function (num) {
  * 服务器数据交互接口类
  */
 const serverApi = {
+  //  获取api根地址
+  getApiRoot: apiRoot,
   //  建立数据接口基本数据
   buildParams: buildParams,
   //  serverApi配置项

@@ -33,9 +33,11 @@ mainRouter.beforeEach((to, from, next) => {
   if (to.meta.title) {
     document.title = to.meta.title || '盈富永泰集团'
   }
-  console.log(to.path);
+  console.log(to.path)
   if (to.path.match('scan')) {
+    console.log('扫码访问')
     next()
+    return
   }
   //  用户未进行登录,则跳转到授权页面
   if (to.path === '/userAuth') {

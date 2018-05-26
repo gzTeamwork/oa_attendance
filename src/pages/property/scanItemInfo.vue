@@ -26,7 +26,7 @@ export default {
     //  实例化之后,则是根据id向服务器发起询问
 
     //  1.获取查询参数
-    let itemId = vm.$route.query.id || null;
+    let itemId = vm.$route.query.union_id || null;
     this.itemId = itemId;
     if (itemId == null) {
     } else {
@@ -42,12 +42,10 @@ export default {
     handerScanItemInfoChange: function(v) {
       let vm = this;
       vm.itemInfo = v;
-      Qrcode.toDataURL(
-        "http://wxoa.emking.cn/scan?id=" + v.unionid,
-        (err, url) => {
-          vm.itemInfo.qrcode = url;
-        }
-      );
+      let itemUrl = "http://wxoa.emking.cn/scan?union_id=" + v.unionid;
+      Qrcode.toDataURL(itemUrl, (err, url) => {
+        vm.itemInfo.qrcode = url;
+      });
     }
   }
 };
