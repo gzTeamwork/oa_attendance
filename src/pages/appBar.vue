@@ -1,9 +1,10 @@
 <template>
   <div id="appBar">
     <router-view></router-view>
-    <mu-bottom-nav :value="curAppBar" @change="handleChange">
+    <com-bottom-nav :navs="appBars"></com-bottom-nav>
+    <!-- <mu-bottom-nav :value="curAppBar" @change="handleChange">
       <mu-bottom-nav-item v-for="item in appBars" :key="item.path" :value="item.path" :title="item.title" :icon="item.icon" :to="item.path" activeClass="appBar-active" />
-    </mu-bottom-nav>
+    </mu-bottom-nav> -->
   </div>
 </template>
 
@@ -12,8 +13,10 @@ let appBars = [
   { title: "排班", path: "schedule", icon: "today" },
   { title: "调休", path: "userRest", icon: "face" },
   { title: "报餐", path: "dailyMeal", icon: "local_dining" },
-  { title: "二维码", path: "qrcode", icon: "center_focus_strong" }
+  { title: "二维码", path: "qrcode", icon: "center_focus_strong" },
+  { title: "我", path: "myInfo", icon: "people" }
 ];
+import comBottomNav from "@/components/bottomNav.vue";
 export default {
   name: "appBar",
   data() {
@@ -31,6 +34,9 @@ export default {
         this.curAppBar = val;
       }
     }
+  },
+  components: {
+    "com-bottom-nav": comBottomNav
   }
 };
 </script>

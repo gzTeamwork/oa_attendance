@@ -1,7 +1,7 @@
 
 <template>
-  <div id="itemInfoPage">
-    <div v-for="(e,i) in itemInfo" :key="i">
+  <div id="pageScanItem">
+    <div v-for="(e,i) in info" :key="i">
       <div v-if="i != 'qrcode'">{{e}}</div>
       <img v-if="i == 'qrcode'" :src="e" alt="" />
     </div>
@@ -9,13 +9,15 @@
 </template>
 
 <script>
+//  引入二维码生成器
 import Qrcode from "qrcode";
+
 export default {
-  name: "itemInfopage",
+  name: "pageScanItem",
   data() {
     return {
-      itemId: null,
-      itemInfo: null
+      union_id: null,
+      info: null
     };
   },
   components: {
@@ -23,14 +25,12 @@ export default {
   },
   created() {
     let vm = this;
-    //  实例化之后,则是根据id向服务器发起询问
-
-    //  1.获取查询参数
-    let itemId = vm.$route.query.union_id || null;
-    this.itemId = itemId;
-    if (itemId == null) {
+    //  根据扫码的union_id向服务器发起查询
+    let union_id = vm.$route.query.union_id || null;
+    this.union_id = union_id;
+    if (union_id == null) {
     } else {
-      vm.$serverApi.getItemInfoByScan(itemId);
+      vm.$serverApi.getItemInfoByScan(union_id);
     }
   },
   computed: {
@@ -41,10 +41,10 @@ export default {
   watch: {
     handerScanItemInfoChange: function(v) {
       let vm = this;
-      vm.itemInfo = v;
+      vm.info = v;
       let itemUrl = "http://wxoa.emking.cn/scan?union_id=" + v.unionid;
       Qrcode.toDataURL(itemUrl, (err, url) => {
-        vm.itemInfo.qrcode = url;
+        vm.info.qrcode = url;
       });
     }
   }

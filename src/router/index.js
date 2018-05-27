@@ -3,30 +3,21 @@ import SubRouter from './subRouter'
 
 import ServerApi from '@/libs/serverApi.js'
 // import WeixinApi from '@/libs/weixinApi.js'
+import scanRouter from '@/apps/qrcode/router/scanItem.js'
 const pageAppBar = () =>
   import ('@/pages/appBar.vue')
-const pageScanQrcodeItem = () =>
-  import ('@/pages/property/scanItemInfo.vue')
+
 const mainRouter = new Router({
   mode: 'history',
-  routes: [{
-      path: '/scan',
-      name: 'Scan Item Qrcode Page',
-      component: pageScanQrcodeItem,
-      meta: {
-        title: '盈富永泰资产管理二维码'
-      }
+  routes: [scanRouter, {
+    path: '/',
+    name: 'index page',
+    component: pageAppBar,
+    meta: {
+      title: '移动办公增强'
     },
-    {
-      path: '/',
-      name: 'index page',
-      component: pageAppBar,
-      meta: {
-        title: '移动办公增强'
-      },
-      children: SubRouter
-    }
-  ]
+    children: SubRouter
+  }]
 })
 
 mainRouter.beforeEach((to, from, next) => {

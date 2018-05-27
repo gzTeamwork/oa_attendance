@@ -11,8 +11,7 @@ const pageUserAuth = () =>
   import ('@/pages/components/userAuth.vue')
 
 const pageQrcode = () =>
-  import ('@/pages/qrcode/index.vue')
-
+  import ('@/apps/qrcode/pages')
 const subRouter = [{
 
     //  报餐

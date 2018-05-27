@@ -22,8 +22,8 @@
         <!-- <mu-raised-button label="添加物品二维码" labelPosition="before" icon="add" secondary/> -->
       </mu-flexbox-item>
     </mu-flexbox>
-    <!-- 权属二维码记录区 -->
 
+    <!-- 权属二维码记录区 -->
     <mu-list>
       <mu-list-item v-for="(e,i) in qrcodeItems" :key="i">
         <mu-icon slot="left" value="inbox" /> {{e.name}} - {{e.infoUrl}}
@@ -34,6 +34,7 @@
         </template>
       </mu-list-item>
     </mu-list>
+
   </div>
 </template>
 
@@ -63,9 +64,9 @@ export default {
     handerQrcodeItemsChange: function(v) {
       // let hostUrl = process.env.NODE_ENV === 'development'?''
       v.map((e, i) => {
-        e.infoUrl = "/scan?id=" + e.unionid;
+        e.infoUrl = "/scan?union_id=" + e.unionid;
         Qrcode.toDataURL(
-          "http://wxoa.emking.cn/scan?id=" + e.unionid,
+          "http://wxoa.emking.cn/scan?union_id=" + e.unionid,
           (err, url) => {
             e.qrcodeImg = url;
           }
