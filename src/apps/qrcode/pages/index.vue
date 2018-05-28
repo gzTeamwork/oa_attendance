@@ -1,10 +1,22 @@
 <template>
   <div id="qrcodePage">
-    <mu-flexbox justify="center">
-      <mu-flexbox-item align='center'>
-        <!-- 左侧用户信息 -->
-        <com-user-info></com-user-info>
+
+    <!-- <mu-raised-button @click="openBottomSheet" label="Open Bottom Sheet" /> -->
+    <!-- <mu-bottom-sheet :open="bottomSheet" @close="closeBottomSheet">
+      <mu-list @itemClick="closeBottomSheet">
+        <mu-sub-header>
+          码表
+        </mu-sub-header>
+        <com-print-codes :items="qrcodeItems"></com-print-codes>
+      </mu-list>
+    </mu-bottom-sheet> -->
+    <mu-flexbox class="userInfo img-box" :style="{backgroundImage:'url('+require('./../assets/imgs/header_bg.png')+')'}">
+      <mu-flexbox-item align="center" justify="center">
+        <com-user-info :theme="'white'"></com-user-info>
       </mu-flexbox-item>
+    </mu-flexbox>
+
+    <mu-flexbox justify="center">
       <mu-flexbox-item>
         <!-- 码数 -->
         下辖二维码:{{qrcodeItems.length||0}}个
@@ -39,17 +51,20 @@
 </template>
 
 <script>
-const comUserInfo = () => import("@/pages/qrcode/components/userInfo.vue");
+const comUserInfo = () => import("@/apps/public/userInfo.vue");
+// const comPrintCodes = () => import("./printCodes.vue");
 import Qrcode from "qrcode";
 export default {
   name: "qrcodePage",
   data() {
     return {
-      qrcodeItems: []
+      qrcodeItems: [],
+      bottomSheet: false
     };
   },
   components: {
     "com-user-info": comUserInfo
+    // "com-print-codes": comPrintCodes
   },
   created() {
     let vm = this;
@@ -74,9 +89,22 @@ export default {
       });
       this.qrcodeItems = v;
     }
+  },
+  methods: {
+    closeBottomSheet() {
+      this.bottomSheet = false;
+    },
+    openBottomSheet() {
+      this.bottomSheet = true;
+    }
   }
 };
 </script>
-
-<style>
+<style lang="scss" scoped>
+#qrcodePage {
+  .userInfo {
+    box-shadow: 0 0 25px #6373f0;
+  }
+}
 </style>
+

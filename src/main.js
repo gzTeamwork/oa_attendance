@@ -6,6 +6,8 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import 'es6-promise'
 import appConfig from '@/configs/app.Config.js'
+//  引入全局样式
+import '@/assets/scss/app.scss'
 //  引入助手函数
 import Helper from '@/libs/helper.js'
 // 引入 muse-ui

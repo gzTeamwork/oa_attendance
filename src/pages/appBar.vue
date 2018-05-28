@@ -1,7 +1,7 @@
 <template>
   <div id="appBar">
     <router-view></router-view>
-    <com-bottom-nav :navs="appBars"></com-bottom-nav>
+    <com-user-drawer :navs="appBars"></com-user-drawer>
     <!-- <mu-bottom-nav :value="curAppBar" @change="handleChange">
       <mu-bottom-nav-item v-for="item in appBars" :key="item.path" :value="item.path" :title="item.title" :icon="item.icon" :to="item.path" activeClass="appBar-active" />
     </mu-bottom-nav> -->
@@ -16,7 +16,9 @@ let appBars = [
   { title: "二维码", path: "qrcode", icon: "center_focus_strong" },
   { title: "我", path: "myInfo", icon: "people" }
 ];
-import comBottomNav from "@/components/bottomNav.vue";
+
+import comUserDrawer from "@/components/userDrawer.vue";
+
 export default {
   name: "appBar",
   data() {
@@ -36,28 +38,28 @@ export default {
     }
   },
   components: {
-    "com-bottom-nav": comBottomNav
+    "com-user-drawer": comUserDrawer
   }
 };
 </script>
 
-<style>
+<style lang="scss">
 #appBar {
   height: 100%;
   padding-bottom: 6em;
-}
-#appBar .mu-bottom-nav {
-  position: fixed;
-  bottom: 0;
-}
-#appBar .appBar-active {
-  color: slateblue !important;
-}
-#appBar .mu-appbar {
-  position: fixed;
-  z-index: 1200;
-}
-#appBar .mu-appbar + div {
-  padding-top: 5em;
+  & .mu-bottom-nav {
+    position: fixed;
+    bottom: 0;
+  }
+  & .appBar-active {
+    color: slateblue !important;
+  }
+  & .mu-appbar {
+    position: fixed;
+    z-index: 1200;
+  }
+  & .mu-appbar + div {
+    padding-top: 5em;
+  }
 }
 </style>

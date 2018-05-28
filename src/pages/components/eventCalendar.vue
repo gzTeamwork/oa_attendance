@@ -3,7 +3,7 @@
     <mu-appbar>
       <div slot="default">排班日历表
       </div>
-      <mu-icon-button icon="today" slot="left" @click="handleGoToday"></mu-icon-button>
+      <mu-icon-button icon="today" slot="left" @click="handlerGoToday"></mu-icon-button>
       <mu-icon-button icon="refresh" slot="right" @click="handleRefresh"></mu-icon-button>
     </mu-appbar>
     <vue-event-calendar :events="calenderEvents" @day-changed="handleDayChanged" @month-changed="handleMonthChanged" :style='{"margin-bottom":"0"}'>
@@ -17,26 +17,26 @@
                 <!-- 休假 共{{events.onRest.length||0}}人 -->
               </mu-chip>
               <mu-row>
-              <mu-col width="100" table="100" desktop="100"></mu-col>
-              <mu-col width="50"  table="50" desktop="50" v-for="(event , index) in events.onRest" :key="'rest'+index">
-                <mu-list-item :describeText="'休假'" :title="event.username" @click="handleEventClick(event)">
-                  <mu-icon color="pink500" slot="right" value="alarm_off" />
-                </mu-list-item>
-              </mu-col>
+                <mu-col width="100" table="100" desktop="100"></mu-col>
+                <mu-col width="50" table="50" desktop="50" v-for="(event , index) in events.onRest" :key="'rest'+index">
+                  <mu-list-item :describeText="'休假'" :title="event.username" @click="handleEventClick(event)">
+                    <mu-icon color="pink500" slot="right" value="alarm_off" />
+                  </mu-list-item>
+                </mu-col>
               </mu-row>
             </div>
             <!-- 上班人员 -->
             <div v-if="events.onDuty" class="event-item" gutter>
               <mu-chip>
-                 <mu-avatar color="green100" backgroundColor="green400" :size="32">{{Object.getOwnPropertyNames(events.onDuty).length||0}}</mu-avatar>人上班
+                <mu-avatar color="green100" backgroundColor="green400" :size="32">{{Object.getOwnPropertyNames(events.onDuty).length||0}}</mu-avatar>人上班
                 <!-- 上班 共{{Object.getOwnPropertyNames(events.onDuty).length||0}}人 -->
               </mu-chip>
               <mu-row>
-              <mu-col width="50"  table="50" desktop="50" v-for="(event , index) in events.onDuty" :key="'duty'+index">
-                <mu-list-item :title="event.name" :describeText="'上班'" @click="handleEventClick(event)">
-                  <mu-icon color="lightGreen500" slot="right" value="alarm_on" />
-                </mu-list-item>
-              </mu-col>
+                <mu-col width="50" table="50" desktop="50" v-for="(event , index) in events.onDuty" :key="'duty'+index">
+                  <mu-list-item :title="event.name" :describeText="'上班'" @click="handleEventClick(event)">
+                    <mu-icon color="lightGreen500" slot="right" value="alarm_on" />
+                  </mu-list-item>
+                </mu-col>
               </mu-row>
             </div>
           </div>
@@ -78,7 +78,7 @@ export default {
   mounted: function() {
     let vm = this;
     setTimeout(() => {
-      vm.handleGoToday();
+      vm.handlerGoToday();
     }, 1000);
   },
   watch: {
@@ -114,7 +114,7 @@ export default {
     handleEventClick: function(event) {
       //  员工点击事件,后续开发使用
     },
-    handleGoToday: function(event) {
+    handlerGoToday: function(event) {
       //  排班日历跳转到今天
       console.log("排班日期切换到今天,当前日期为" + today);
       this.$EventCalendar.toDate(today);
@@ -131,7 +131,7 @@ export default {
       let vm = this;
       vm.$serverApi.getCurMonthEvents(today);
       setTimeout(function() {
-        this.handleGoToday();
+        vm.handlerGoToday();
       }, 1000);
       let dateNow = new Date();
       vm.msg = "数据更新于" + dateNow.Format("yyyy-M-d h:m:s");

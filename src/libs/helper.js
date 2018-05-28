@@ -36,11 +36,21 @@ let objectToArray = function (ob) {
   })
   return arr
 }
+/* 质朴长存法  by lifesinger */
+let getPad = function (num, n) {
+  var len = num.toString().length;
+  while (len < n) {
+    num = "0" + num;
+    len++;
+  }
+  return num;
+}
 
 const helper = {
   getUrlJson: getUrlJson,
   getO2A: objectToArray,
-  getObjLen: objectLength
+  getObjLen: objectLength,
+  getPad: getPad
 }
 
 export default helper

@@ -1,3 +1,6 @@
+import routerQrcode from '@/apps/qrcode/router'
+
+
 const pageDailyMeal = () =>
   import ('@/pages/components/dailyMeal.vue')
 
@@ -10,8 +13,10 @@ const pageUserRest = () =>
 const pageUserAuth = () =>
   import ('@/pages/components/userAuth.vue')
 
-const pageQrcode = () =>
-  import ('@/apps/qrcode/pages')
+// const pageQrcode = () =>
+//   import ('@/apps/qrcode/pages')
+
+
 const subRouter = [{
 
     //  报餐
@@ -54,14 +59,8 @@ const subRouter = [{
 
   },
   //  扫码管理
-  {
-    path: 'qrcode',
-    name: '二维码管理页面',
-    component: pageQrcode,
-    meta: {
-      title: '二维码管理页面'
-    }
-  }, {
+  routerQrcode, {
+
 
     //  默认路由
     path: '',
