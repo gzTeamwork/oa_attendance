@@ -381,7 +381,9 @@ const serverApi = {
   getAppToken: getAppToken,
 
   login: wxWorkLogin,
+
   serverUrl: apiRoot,
+
   getToken: getToken,
   //  获取所有员工信息
   getAllUser: getAllUser,
@@ -397,7 +399,6 @@ const serverApi = {
   getRestDayByUser: getRestDayByUser,
   //  取消员工休息日期
   userCancelRestDay: remUserRestDay,
-
   //  通过员工user_id获取员工信息,调试开发专用
   getUserInfoById: getUserInfoById,
   //  通过员工票据获取员工信息

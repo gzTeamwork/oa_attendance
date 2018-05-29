@@ -6,3 +6,10 @@
     background-size: cover;
   }
 }
+
+.paper {
+  box-shadow: 0 0 10px #DDD;
+  &-round {
+    border-radius: 5px;
+  }
+}

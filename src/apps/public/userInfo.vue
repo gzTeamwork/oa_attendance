@@ -1,15 +1,16 @@
 <template>
-    <div id="comUserInfo" :class="theme">
-        <div style=" position: absolute;top: 50%;">
-            <mu-avatar slot="left" :src="userInfo.avatar || defaultAvatar" :size="96" />
-            <div class="title">
-                {{userInfo.name || "用户昵称"}}
-            </div>
-            <div class="title">
-                {{userInfo.department||"员工"}}
-            </div>
-        </div>
+  <div id="comUserInfo">
+    <div :class="'userInfo ' + theme">
+      <mu-avatar slot="left" :src="userInfo.avatar || defaultAvatar" :size="96" />
+      <div class="title">
+        {{userInfo.name || "用户昵称"}}
+      </div>
+      <div class="title">
+        {{userInfo.department||"员工"}}
+      </div>
     </div>
+  </div>
+
 </template>
 
 <script>
@@ -33,17 +34,21 @@ export default {
   }
 };
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 $white: #ffffff;
 $black: #333333;
-#comUserInfo {
-  min-height: 240px;
-  max-height: 330px;
-  height: 33%;
+.userInfo {
+  height: 240px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
   & .title {
     font-size: 20px;
     line-height: 1.3;
     text-align: center;
+    line-height: 2em;
   }
   &.black {
     & .title {
