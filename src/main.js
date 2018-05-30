@@ -33,7 +33,7 @@ import weixinApi from '@/libs/weixinApi.js'
 //  引入事件promise
 import vueMethodsPromise from 'vue-methods-promise'
 //  引入app配置文件
-
+// import wxworkSDk from '@/extra/wxworkSDK/jweixin-1.2.0.js'
 import App from './App'
 import Router from './router'
 import vueStore from './store'
@@ -41,6 +41,7 @@ import vueStore from './store'
 //  引入其他库
 import '@/libs/dateTimeStamp.js'
 import 'animate.css'
+window.Wx = require('@/extra/wxworkSDK/jweixin-1.2.0.js')
 
 //  挂载全局插件到window
 //  即将废弃辅助程序写入vue中
@@ -50,7 +51,7 @@ window.EventBus = new Vue()
 window.Store = vueStore
 window.Cookies = VueCookie
 window.Jquery = JQuery
-
+// window.WxworkSDK = wxworkSDk
 //  挂载到Vue中
 Vue.use(MuseUI)
 Vue.use(VueCookie)

@@ -7,8 +7,9 @@ import LoginUser from './components/loginUser'
 import UserDuty from './components/userDuty'
 import userDailyMeals from './components/userDailyMeals'
 
-import scanItem from './propertyItem/item'
-import scanItems from './propertyItem/items'
+//  二维码store
+import qrcodeStore from '@/apps/qrcode/store'
+
 Vue.use(Vuex)
 
 const Store = new Vuex.Store({
@@ -18,8 +19,7 @@ const Store = new Vuex.Store({
     userDuty: UserDuty,
     userDailyMeals: userDailyMeals,
     appStatus: AppStatus,
-    scanItem: scanItem,
-    scanItems: scanItems
+    qrcodes: qrcodeStore
   }
 })
 // console.log(Store)
