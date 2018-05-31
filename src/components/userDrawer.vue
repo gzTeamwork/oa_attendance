@@ -1,29 +1,27 @@
 <template>
-    <div id="userDrawer">
-        <mu-float-button class="userDrawerBtn" :icon="this.open?'arrow_forward':'menu'" label="toggle drawer" @click="toggle()" />
-        <mu-drawer :docked="true" right :open="open" @close="toggle()">
-            <!-- <mu-appbar title="Inforward OA" /> -->
-            <mu-avatar :src="userInfo.avatar || defaultAvatar" :size="50" style="margin-top:1em;" />
-            <mu-card-title :title="userInfo.name || '企业微信昵称'" :subTitle="userInfo.english_name ||''">
-            </mu-card-title>
-            <mu-badge :content="userInfo.position||'员工'" primary />
-
-            <mu-divider />
-            <mu-list>
-                <!-- 列表 -->
-                <mu-list-item v-for="(nav,i) in navs" :key="i" :to="nav.path" @click="toggle()" :class="currentPath.match(nav.path)?'active':''">
-                    <div slot="left">
-                        <mu-icon slot="left" :value="nav.icon" />
-                    </div>
-                    <div slot="title" style="text-align: left;">
-                        {{nav.title}}
-                    </div>
-                </mu-list-item>
-                <!-- 关闭按钮 -->
-                <mu-list-item @click.native="open = false" title="关闭" />
-            </mu-list>
-        </mu-drawer>
-    </div>
+  <div id="userDrawer">
+    <mu-float-button class="userDrawerBtn" :icon="this.open?'arrow_forward':'menu'" label="toggle drawer" @click="toggle()" />
+    <mu-drawer :docked="true" right :open="open" @close="toggle()">
+      <!-- <mu-appbar title="Inforward OA" /> -->
+      <mu-avatar :src="userInfo.avatar || defaultAvatar" :size="50" style="margin-top:1em;" />
+      <mu-card-title :title="userInfo.name || '企业微信昵称'" :subTitle="userInfo.english_name ||''">
+      </mu-card-title>
+      <mu-badge :content="userInfo.position||'员工'" primary />
+      <mu-list>
+        <!-- 列表 -->
+        <mu-list-item v-for="(nav,i) in navs" :key="i" :to="nav.path" @click="toggle()" :class="currentPath.match(nav.path)?'active':''">
+          <div slot="left">
+            <mu-icon slot="left" :value="nav.icon" />
+          </div>
+          <div slot="title" style="text-align: left;">
+            {{nav.title}}
+          </div>
+        </mu-list-item>
+        <!-- 关闭按钮 -->
+        <mu-list-item @click.native="open = false" title="关闭" />
+      </mu-list>
+    </mu-drawer>
+  </div>
 </template>
 
 <script>

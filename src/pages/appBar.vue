@@ -2,9 +2,6 @@
   <div id="appBar">
     <router-view></router-view>
     <com-user-drawer :navs="appBars"></com-user-drawer>
-    <!-- <mu-bottom-nav :value="curAppBar" @change="handleChange">
-      <mu-bottom-nav-item v-for="item in appBars" :key="item.path" :value="item.path" :title="item.title" :icon="item.icon" :to="item.path" activeClass="appBar-active" />
-    </mu-bottom-nav> -->
   </div>
 </template>
 
@@ -28,14 +25,14 @@ export default {
     };
   },
   methods: {
-    handleChange: function(val) {
-      if (this.userInfo === null) {
-        alert("请先授权登录");
-        return false;
-      } else {
-        this.curAppBar = val;
-      }
-    }
+    // handleChange: function(val) {
+    //   if (this.userInfo === null) {
+    //     alert("请先授权登录");
+    //     return false;
+    //   } else {
+    //     this.curAppBar = val;
+    //   }
+    // }
   },
   components: {
     "com-user-drawer": comUserDrawer
