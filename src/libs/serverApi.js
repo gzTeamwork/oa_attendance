@@ -344,27 +344,6 @@ let getTomorrowDailyMeals = function () {
   })
 }
 
-//  被扫码之后,向服务器获取资产内容
-let getItemInfoByScan = function (unionId) {
-  vueAxios.get('get_qrcode_item_by_unionid', {
-    params: {
-      union_id: unionId
-    }
-  }).then(res => {
-    window.Store.commit('changeScanItemInfo', res.data)
-  })
-}
-//  获取多个二维码信息
-let getScanItems = function (num) {
-  vueAxios.get('get_qrcode_items', {
-    params: {
-      num: num
-    }
-  }).then(res => {
-    window.Store.commit('changeScanItems', res.data)
-  })
-}
-
 /**
  * 服务器数据交互接口类
  */
@@ -410,10 +389,10 @@ const serverApi = {
   //  获取明天报餐数据
   getTomorrowDailyMeals: getTomorrowDailyMeals,
   // 提交员工单日报餐
-  attendUserDailyMeal: attendUserDailyMeal,
-  //  获取被扫描物品信息
-  getItemInfoByScan: getItemInfoByScan,
-  //  获取物品二维码列表
-  getScanItems: getScanItems
+  attendUserDailyMeal: attendUserDailyMeal
+  // //  获取被扫描物品信息
+  // getItemInfoByScan: getItemInfoByScan,
+  // //  获取物品二维码列表
+  // getScanItems: getScanItems
 }
 export default serverApi

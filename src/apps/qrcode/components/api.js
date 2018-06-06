@@ -1,3 +1,5 @@
+import vueAxios from '@/apps/public/library/serverAxios.js'
+
 let Units = [{
   thumb: require('./../assets/imgs/unit_1.png'),
   title: '1404',
@@ -241,7 +243,31 @@ let Qrcodes = [{
   'url': null,
   'title': '测试标题19'
 }]
-const Api = {
+//  被扫码之后,向服务器获取资产内容
+let getItemInfoByScan = function (unionId) {
+  vueAxios.get('qrcode_api/get_qrcode_item_by_unionid', {
+
+    params: {
+      union_id: unionId
+    }
+  }).then(res => {
+    window.Store.commit('changeScanItemInfo', res.data)
+  })
+}
+//  获取多个二维码信息
+let getScanItems = function (num) {
+  vueAxios.get('qrcode_api/get_qrcode_items', {
+    params: {
+      num: num
+    }
+  }).then(res => {
+    window.Store.commit('changeScanItems', res.data)
+  })
+}
+
+export default {
+  getScanItems: getScanItems,
+  getItemInfoByScan: getItemInfoByScan,
   getUnits: function () {
     return Units
   },
@@ -249,5 +275,3 @@ const Api = {
     return Qrcodes
   }
 }
-
-export default Api

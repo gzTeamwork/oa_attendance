@@ -9,7 +9,8 @@ import appConfig from '@/configs/app.Config.js'
 //  引入全局样式
 import '@/assets/scss/app.scss'
 //  引入助手函数
-import Helper from '@/libs/helper.js'
+// import Helper from '@/libs/helper.js'
+import Helper from '@/apps/public/library/helper'
 // 引入 muse-ui
 import MuseUI from 'muse-ui'
 import 'muse-ui/dist/muse-ui.css'
@@ -17,6 +18,7 @@ import 'muse-ui/dist/theme-carbon.css'
 import '../static/iconfont/material-icons.css'
 
 /** ** 插件引入 ** **/
+
 //  引入jQuery
 import JQuery from 'jquery'
 //  引入Nprogress进度条
@@ -43,15 +45,14 @@ import '@/libs/dateTimeStamp.js'
 import 'animate.css'
 window.Wx = require('@/extra/wxworkSDK/jweixin-1.2.0.js')
 
-//  挂载全局插件到window
-//  即将废弃辅助程序写入vue中
+// @destroyed 即将废弃多余的挂载,整体挂到helper下
 window.Helper = Helper
 window.Nprogress = NProgress
-window.EventBus = new Vue()
+// window.EventBus = new Vue()
 window.Store = vueStore
 window.Cookies = VueCookie
 window.Jquery = JQuery
-// window.WxworkSDK = wxworkSDk
+
 //  挂载到Vue中
 Vue.use(MuseUI)
 Vue.use(VueCookie)

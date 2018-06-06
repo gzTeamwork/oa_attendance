@@ -1,35 +1,21 @@
 import routerQrcode from '@/apps/qrcode/router'
+import routerDailyMeal from '@/apps/dailyMeal/router'
 
-
-const pageDailyMeal = () =>
-  import ('@/pages/components/dailyMeal.vue')
+// const pageDailyMeal = () =>
+//   import ('@/pages/components/dailyMeal.vue')
 
 const pageEventCalendar = () =>
   import ('@/pages/components/eventCalendar.vue')
 
 const pageUserRest = () =>
   import ('@/pages/components/userDuty.vue')
-
+//  加载用户验证页面
 const pageUserAuth = () =>
   import ('@/pages/components/userAuth.vue')
 
-// const pageQrcode = () =>
-//   import ('@/apps/qrcode/pages')
-
-
 const subRouter = [{
 
-    //  报餐
-    path: 'dailyMeal',
-    name: 'daily meal',
-    component: pageDailyMeal,
-    meta: {
-      title: '每日报餐'
-    }
-
-  }, {
-
-    //  报餐
+    //  排班
     path: 'schedule',
     name: 'event calendar',
     component: pageEventCalendar,
@@ -59,8 +45,8 @@ const subRouter = [{
 
   },
   //  扫码管理
-  routerQrcode, {
-
+  routerQrcode,
+  routerDailyMeal, {
 
     //  默认路由
     path: '',

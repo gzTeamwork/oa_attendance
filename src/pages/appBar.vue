@@ -1,7 +1,7 @@
 <template>
   <div id="appBar">
+    <com-user-drawer :navs="appBars"></com-user-drawer>    
     <router-view></router-view>
-    <com-user-drawer :navs="appBars"></com-user-drawer>
   </div>
 </template>
 
@@ -24,16 +24,7 @@ export default {
       curAppBar: appBars[0].path
     };
   },
-  methods: {
-    // handleChange: function(val) {
-    //   if (this.userInfo === null) {
-    //     alert("请先授权登录");
-    //     return false;
-    //   } else {
-    //     this.curAppBar = val;
-    //   }
-    // }
-  },
+  methods: {},
   components: {
     "com-user-drawer": comUserDrawer
   }

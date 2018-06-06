@@ -2,7 +2,8 @@ const state = {
   //  被扫码的对象
   scanItem: null,
   //  储存获取到的二维码
-  Qrcodes: []
+  Qrcodes: [],
+  printerQrcode: []
 }
 
 const getters = {
@@ -13,6 +14,9 @@ const getters = {
   //  获取二维码
   getQrcodes: state => {
     return state.Qrcodes
+  },
+  getQrcodeItems: stat => {
+    return state.printerQrcode
   }
 }
 
@@ -26,6 +30,9 @@ const mutations = {
   },
   changeQrcodes: function (state, payload) {
     state.Qrcodes = payload
+  },
+  changeScanItems: function (state, payload) {
+    state.printerQrcode = payload
   }
 }
 

@@ -11,7 +11,7 @@ const qrcodeRouter = {
   meta: {
     title: '二维码管理系统'
   },
-  children: [
+  children: [{
     path: '',
     name: 'qrcode index page',
     component: qrcodeIndex,
