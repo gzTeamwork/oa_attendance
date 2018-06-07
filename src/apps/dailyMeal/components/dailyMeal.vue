@@ -15,6 +15,7 @@
     <!-- 主页面内容 -->
     <com-page-head title="报餐" icon="local_dining"></com-page-head>
     <mu-flexbox>
+
       <mu-flexbox-item class="dateBtn today" align="center" justify="center">
         <!-- 今天报餐统计 -->
         <div @click="handleOpenTodayTotal">
@@ -25,6 +26,7 @@
           <div class="summary">{{today.date}}</div>
         </div>
       </mu-flexbox-item>
+
       <mu-flexbox-item class="dateBtn tomorrow" align="center" justify="center">
         <!-- 明天报餐统计 -->
         <div @click="handleOpenTomorrowTotal">
@@ -39,7 +41,7 @@
     </mu-flexbox>
     <mu-list title="每日报餐" id="dailyMealList">
       <mu-sub-header>未来7天报餐</mu-sub-header>
-      <mu-paper style="margin:.5em" v-for="(item,index) in weekEvents" :key="index" v-if="(item.day != 0 && item.day != 6)" >
+      <mu-paper style="margin:.5em" v-for="(item,index) in weekEvents" :key="index" v-if="(item.day != 0 && item.day != 6)" :class="item.isCheck?'mealCheck':''">
         <mu-list-item>
           <div slot="title">
             <mu-chip backgroundColor="blue300" color="white">
@@ -67,14 +69,13 @@
         <mu-list-item>
           <div slot="title">
             <mu-chip backgroundColor="red300" color="white">
-                      周{{weekDay[item.day]}}
-                    </mu-chip>
-                    <mu-chip>
-                      {{ new Date(item.date).Format("yyyy年MM月dd日")}}
-                      <!-- - {{weekDay[item.day]}} -->
-                    </mu-chip>
-                    <mu-badge content="今天" v-if="item.date == today.date" secondary slot="after" />
-                    无法报餐
+              周{{weekDay[item.day]}}
+            </mu-chip>
+            <mu-chip>
+              {{ new Date(item.date).Format("yyyy年MM月dd日")}}
+              <!-- - {{weekDay[item.day]}} -->
+            </mu-chip>
+            <mu-badge content="今天" v-if="item.date == today.date" secondary slot="after" /> 无法报餐
           </div>
         </mu-list-item>
       </mu-paper>
@@ -131,9 +132,9 @@ export default {
     //  获取用户信息
     vm.userInfo = vm.$store.getters.getUserInfo;
     //  获取用户报餐事件
-    vm.weekEvents = vm.$serverApi.getUserWeekMeal(vm.userInfo.userid);
+    // vm.weekEvents = vm.$serverApi.getUserWeekMeal(vm.userInfo.userid);
+    mealApi.getUserSevenDayMeals(vm.userInfo.userid);
     //  获取明天报餐汇总数据
-    // vm.$serverApi.getTomorrowDailyMeals();
     mealApi.getLateMealsTotal();
   },
   components: {
@@ -148,6 +149,8 @@ export default {
       let vm = this;
 
       vm.weekEvents[index].isCheck = !vm.weekEvents[index].isCheck;
+
+      //  提交用户报餐
       vm.$serverApi.attendUserDailyMeal(
         vm.userInfo.userid,
         vm.weekEvents[index]
@@ -172,10 +175,12 @@ export default {
     handleTotalOpen: function() {
       this.totals.show = true;
     },
+
     //  关闭报餐统计
     handleTotalClose: function() {
       this.totals.show = false;
     },
+
     //  打开明日统计
     handleOpenTomorrowTotal: function() {
       this.totals.date = window.Helper.timer()
@@ -187,6 +192,7 @@ export default {
       this.totals.items = items;
       this.totals.show = true;
     },
+
     //  打开今日统计
     handleOpenTodayTotal: function() {
       this.totals.date = window.Helper.timer()
@@ -213,9 +219,12 @@ export default {
     }
   },
   computed: {
+    //  监听明日报餐
     handlerTomorrowDailyMeal: function() {
       return this.$store.getters.getTomorrowDailyMeals;
     },
+
+    //  监听最近2日报餐统计
     handleLateMeals: function() {
       return this.$store.state.dailyMeals.lateDailyMeals;
     }
@@ -226,6 +235,8 @@ export default {
 #dailyMeal {
   padding-top: 4em;
   text-align: left;
+  & .mealCheck {
+  }
   & .dateBtn {
     &.today {
       color: #333;
@@ -238,6 +249,14 @@ export default {
       font-weight: 900;
     }
     .summary {
+    }
+  }
+  @keyframes reversal3d {
+    0% {
+      transform: rotateY(0);
+    }
+    100% {
+      transform: rotateY(180);
     }
   }
 }

@@ -30,7 +30,7 @@ let getUserWeekMeal = function (userid, todayDate) {
     datas.push(event)
   }
 
-  window.Store.commit('changeUserWeekMeals', datas)
+  // window.Store.commit('changeUserWeekMeals', datas)
   vueAxios
     .get('get_user_daily_meal_in_week', {
       params: {
@@ -77,7 +77,7 @@ let getTomorrowDailyMeals = function () {
  */
 
 let getLateMealsTotal = function (days = 2) {
-  vueAxios.get('mealsapi/get_late_meals', {
+  vueAxios.get('mealsapi/total_recent_meals', {
     params: {
       days: days
     }
@@ -86,6 +86,17 @@ let getLateMealsTotal = function (days = 2) {
   })
 }
 
+let getUserSevenDayMeals = function (userId, todayDate) {
+  vueAxios.get('mealsapi/user_recent_meals', {
+    params: {
+      user_id: userId || null,
+      begin_date: todayDate || new Date()
+    }
+  }).then(res => {
+    window.Store.commit('changeUserMeals', res.data)
+  })
+
+}
 /**
  * 服务器数据交互接口类
  */
@@ -98,8 +109,11 @@ const serverApi = {
   getTomorrowDailyMeals: getTomorrowDailyMeals,
   // 提交员工单日报餐
   attendUserDailyMeal: attendUserDailyMeal,
+
   //  获取最近报餐统计数据
-  getLateMealsTotal: getLateMealsTotal
+  getLateMealsTotal: getLateMealsTotal,
+  //  获取最近7日报餐统计
+  getUserSevenDayMeals: getUserSevenDayMeals
 
 }
 export default serverApi
