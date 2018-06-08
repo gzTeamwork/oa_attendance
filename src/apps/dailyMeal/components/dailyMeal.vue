@@ -4,11 +4,12 @@
       <mu-list>
         <mu-list-item :title="item.name" v-for="(item,index) in totals.items" :key="index">
           <mu-avatar :src="item.avatar" slot="leftAvatar"></mu-avatar>
-          <mu-icon slot="right" value="eat" />
+          <mu-icon slot="right" :value="item.need_meal?'check':'close'" />
+          <mu-badge>{{item.need_meal}}</mu-badge>
         </mu-list-item>
       </mu-list>
       <div slot="actions">
-        {{totals.date}}共有{{totals.items.length}}人吃饭
+        {{totals.date}}共有{{totals.items.length||0}}人吃饭
         <mu-flat-button primary label="关闭" @click="handleTotalClose" slot="actions" />
       </div>
     </mu-dialog>
@@ -34,28 +35,28 @@
           <div class="summary">Tomorrow</div>
           <div class="title">{{tomorrow.items.length||0}}人</div>
           <div class="summary">(点击查看)</div>
-
           <div class="summary">{{tomorrow.date}}</div>
         </div>
       </mu-flexbox-item>
     </mu-flexbox>
     <mu-list title="每日报餐" id="dailyMealList">
       <mu-sub-header>未来7天报餐</mu-sub-header>
-      <mu-paper style="margin:.5em" v-for="(item,index) in weekEvents" :key="index" v-if="(item.day != 0 && item.day != 6)" :class="item.isCheck?'mealCheck':''">
+      <!-- 7天报餐列表 -->
+      <mu-paper style="margin:.5em" v-for="(item,index) in weekEvents" :key="index" v-if="(item.day != 0 && item.day != 6)" :class="item.need_meal?'mealCheck':''">
         <mu-list-item>
           <div slot="title">
             <mu-chip backgroundColor="blue300" color="white">
               周{{weekDay[item.day]}}
             </mu-chip>
             <mu-chip>
-              {{ new Date(item.date).Format("yyyy年MM月dd日")}}
+              {{ new Date(item.meal_date).Format("yyyy年MM月dd日")}}
               <!-- - {{weekDay[item.day]}} -->
             </mu-chip>
             <mu-badge content="今天" v-if="item.date == today.date" secondary slot="after" />
           </div>
           <div slot="right" style="padding-top:4em">
-            <mu-float-button slot="right" :icon="item.isCheck?'check':'add'" :backgroundColor="item.isCheck?'green300':'brown100'" mini class="demo-float-button" @click="handleCheck(index)" />
-            <div style="text-align:center;font-size:13px">{{item.isCheck?'已':'未'}}报餐</div>
+            <mu-float-button slot="right" :icon="item.need_meal?'check':'add'" :backgroundColor="item.need_meal?'green300':'brown100'" @click="handleCheck($event,index)" />
+            <div style="text-align:center;font-size:13px">{{item.need_meal?'已':'未'}}报餐</div>
           </div>
           <mu-flexbox justify="space-between" align="center" style="padding-top:0.6em;text-align:center">
             <mu-flexbox-item v-for="(food,foodIndex) in item.menu" :key="foodIndex">
@@ -72,7 +73,7 @@
               周{{weekDay[item.day]}}
             </mu-chip>
             <mu-chip>
-              {{ new Date(item.date).Format("yyyy年MM月dd日")}}
+              {{ new Date(item.meal_date).Format("yyyy年MM月dd日")}}
               <!-- - {{weekDay[item.day]}} -->
             </mu-chip>
             <mu-badge content="今天" v-if="item.date == today.date" secondary slot="after" /> 无法报餐
@@ -142,24 +143,22 @@ export default {
   },
   methods: {
     //  点餐按钮事件
-    handleCheck: function(index) {
+    handleCheck: function(event, index) {
       console.log("点击报餐按钮,进行报餐");
-      console.log(this.weekEvents[index]);
+      // console.log(this.weekEvents[index]);
 
       let vm = this;
 
-      vm.weekEvents[index].isCheck = !vm.weekEvents[index].isCheck;
+      vm.weekEvents[index].need_meal =
+        vm.weekEvents[index].need_meal == 1 ? 0 : 1;
 
       //  提交用户报餐
-      vm.$serverApi.attendUserDailyMeal(
-        vm.userInfo.userid,
-        vm.weekEvents[index]
-      );
+      mealApi.attendUserDailyMeal(vm.userInfo.userid, vm.weekEvents[index]);
 
       vm.$store.commit(
         "changeLog",
-        vm.weekEvents[index].date +
-          (vm.weekEvents[index].isCheck ? "我要吃饭" : "我还是不吃了")
+        vm.weekEvents[index].meal_date +
+          (vm.weekEvents[index].need_meal ? "我要吃饭" : "我还是不吃了")
       );
     },
 
@@ -216,17 +215,27 @@ export default {
     handleLateMeals: function(v) {
       this.today.items = this.$store.getters.getTodayMeals;
       this.tomorrow.items = this.$store.getters.getTomorrowMeals;
+    },
+
+    //  监听7天报餐
+    handleSevenMeals: function(v) {
+      this.weekEvents = v;
     }
   },
   computed: {
-    //  监听明日报餐
+    //  计算明日报餐
     handlerTomorrowDailyMeal: function() {
       return this.$store.getters.getTomorrowDailyMeals;
     },
 
-    //  监听最近2日报餐统计
+    //  计算最近2日报餐统计
     handleLateMeals: function() {
       return this.$store.state.dailyMeals.lateDailyMeals;
+    },
+
+    // 计算7天报餐数据
+    handleSevenMeals: function() {
+      return this.$store.getters.getSevenMeals;
     }
   }
 };

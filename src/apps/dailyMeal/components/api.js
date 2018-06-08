@@ -1,7 +1,11 @@
 import vueAxios from '@/apps/public/library/serverAxios.js'
-
-//  获取员工近日报餐数据
-let getUserWeekMeal = function (userid, todayDate) {
+const apiModelPath = 'mealsapi'
+/**
+ * 生成获取近期用户报餐模拟数据;
+ * @param {*} userId
+ * @param {*} todayDate
+ */
+let getUserWeekMeal = function (userId, todayDate) {
   let datas = []
   //  产生数据
   todayDate = new Date()
@@ -34,7 +38,7 @@ let getUserWeekMeal = function (userid, todayDate) {
   vueAxios
     .get('get_user_daily_meal_in_week', {
       params: {
-        user_id: userid || null,
+        user_id: userId || null,
         begin_date: todayDate || new Date()
       }
     })
@@ -45,23 +49,10 @@ let getUserWeekMeal = function (userid, todayDate) {
   return datas
 }
 
-//  提交员工报餐数据
-let attendUserDailyMeal = function (userid, mealEvent) {
-  vueAxios
-    .get('attend_user_daily_meal', {
-      params: {
-        user_id: userid || null,
-        meal_check: mealEvent.isCheck ? 1 : 0,
-        meal_date: mealEvent.date || null
-      }
-    })
-    .then(res => {
-      //  指派数据UserMeals
-      window.Store.commit('changeUserDailyMeal', res.data)
-    })
-}
-
-//  获取明天员工报餐统计
+/**
+ * 获取明日报餐
+ * @deprecated 本方法已弃用
+ */
 let getTomorrowDailyMeals = function () {
   vueAxios.get('get_tomorrow_daily_meals').then(res => {
     window.Store.commit('changeTomorrowDailyMeals', res.data)
@@ -74,29 +65,66 @@ let getTomorrowDailyMeals = function () {
  * getLastMealsTotal
  * 获取最近报餐记录 - 默认获取最近2天
  * meals_api/get_lately_meals
+ * @param {*} days
  */
 
 let getLateMealsTotal = function (days = 2) {
-  vueAxios.get('mealsapi/total_recent_meals', {
-    params: {
-      days: days
-    }
-  }).then(res => {
-    window.Store.commit('changeLatelyMeals', res.data)
-  })
+  vueAxios
+    .get(apiModelPath + '/get_recent_total', {
+      params: {
+        days: days
+      }
+    })
+    .then(res => {
+      window.Store.commit('changeLatelyMeals', res.data)
+    })
 }
 
+/**
+ * getUserSevernDayMeals
+ * 获取用户最近7天的报餐数据
+ * @param {*} userId
+ * @param {*} todayDate
+ */
 let getUserSevenDayMeals = function (userId, todayDate) {
-  vueAxios.get('mealsapi/user_recent_meals', {
-    params: {
-      user_id: userId || null,
-      begin_date: todayDate || new Date()
-    }
-  }).then(res => {
-    window.Store.commit('changeUserMeals', res.data)
-  })
-
+  vueAxios
+    .get(apiModelPath + '/get_user_meals', {
+      params: {
+        user_id: userId || null,
+        begin_date: todayDate || null
+      }
+    })
+    .then(res => {
+      window.Store.commit('changeUserMeals', res.data)
+    })
 }
+
+/**
+ * 单个提交员工报餐数据
+ * @param {*} userId
+ * @param {*} mealEvent
+ */
+let attendUserDailyMeal = function (userId, mealEvent) {
+  if (mealEvent.meal_date === undefined) {
+    return window.Store.commit('changeLog', '提交用户报餐失败,缺少日期参数')
+  }
+  vueAxios
+    .get(apiModelPath + '/attend_user_meal', {
+      params: {
+        //  userId
+        user_id: userId || null,
+        //  是否报餐
+        meal_check: mealEvent.isCheck ? 1 : 0,
+        //  报餐日期
+        meal_date: mealEvent.meal_date || null
+      }
+    })
+    .then(res => {
+      //  指派数据UserMeals
+      window.Store.commit('changeUserDailyMeal', res.data)
+    })
+}
+
 /**
  * 服务器数据交互接口类
  */
@@ -109,11 +137,9 @@ const serverApi = {
   getTomorrowDailyMeals: getTomorrowDailyMeals,
   // 提交员工单日报餐
   attendUserDailyMeal: attendUserDailyMeal,
-
   //  获取最近报餐统计数据
   getLateMealsTotal: getLateMealsTotal,
   //  获取最近7日报餐统计
   getUserSevenDayMeals: getUserSevenDayMeals
-
 }
 export default serverApi
